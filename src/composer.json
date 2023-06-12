@@ -16,6 +16,9 @@
     "require": {
         "php": ">8.0",
         "robmorgan/phinx": "*",
-        "symfony/routing": "*"
+        "twig/twig": "^3.0",
+        "phlak/config": "^7.0",
+        "vlucas/phpdotenv": "^5.5",
+        "bramus/router": "^1.6"
     }
 }
