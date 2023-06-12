@@ -32,11 +32,6 @@ class Application
      * Generic function for creating a database
      *
      * @param array $config Containing the values:
-     * * db_name for the database name
-     * * db_host for the database host
-     * * db_port for database port
-     * * db_user for database user
-     * * db_passwd for database password
      * 
      * @return void
      * @throws Exception
@@ -45,10 +40,13 @@ class Application
     {
         $connectionString = 'mysql:host=%s;port=%s;dbname=%s';
         
-        $dbPort = !empty($config['db_port'])?$config['db_port']:3306;
+        $env = $_ENV['APP_ENV']??'development';
+        $config = $config['environments'][$env];
 
-        $connectionString = sprintf($connectionString,$config['db_host'],$dbPort,$config['db_name']);
-        return new PDO($connectionString,$config['db_user'],$config['db_passwd']);
+        $dbPort = !empty($config['port'])?$config['port']:3306;
+
+        $connectionString = sprintf($connectionString,$config['host'],$dbPort,$config['name']);
+        return new PDO($connectionString,$config['user'],$config['pass']);
     }
 
     /**
@@ -58,7 +56,7 @@ class Application
      */
     private function di()
     {
-        $config = require_once(self::CONFIG_PATH.'/database.php');
+        $config = require_once(self::CONFIG_PATH.'/phinx.php');
         $db = self::createDB($config);
 
     }
@@ -75,8 +73,9 @@ class Application
         $routes = require(self::CONFIG_PATH.'/routes.php');
         
         foreach($routes as $path => $routeInfo){
+            
             $method = $routeInfo['http_method'];
-            $controller=$routeInfo['controller'];
+            $controller = $routeInfo['controller'];
 
             switch($method){
                 case self::HTTP_GET:
