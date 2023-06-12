@@ -1,0 +1,5 @@
+./src/vendor
+.vscode
+vendor
+node_modules/
+npm-debug.log
