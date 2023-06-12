@@ -1,0 +1,21 @@
+{
+    "name": "epignosis/adeies",
+    "description": "A simple demo in order to save employee leave out",
+    "type": "project",
+    "license": "MIT",
+    "autoload": {
+        "psr-4": {
+            "App\\": "app/"
+        }
+    },
+    "authors": [
+        {
+            "name": "Dimitrios Desyllas"
+        }
+    ],
+    "require": {
+        "php": ">8.0",
+        "robmorgan/phinx": "*",
+        "symfony/routing": "*"
+    }
+}

@@ -19,6 +19,9 @@ services:
       dockerfile: DockerfileDev
     volumes:
       - './src:/var/www/html'
+    environment:
+      - APP_UID=1000
+      - APP_GID=1000
   
   nginx:
     image: nginx:alpine

@@ -1,10 +1,11 @@
 #!/usr/bin/env sh
 
-usermod -u ${UID} www-data
-groupmod -g ${GID} www-data
+echo ${APP_UID}:${APP_GID}
+usermod -u ${APP_UID} www-data
+groupmod -g ${APP_GID} www-data
 
 echo "Fixing execution permissions"
-find /var/www/src -iname "*.php" | xargs chmod 777
+find /var/www/html -iname "*.php" -exec chmod 777 {} \;
 
 echo "Launch application"
 exec "$@"
