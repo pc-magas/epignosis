@@ -27,6 +27,19 @@ class Application
     const HTTP_DELETE='DELETE';
     const HTTP_ANY='all';
 
+    /**
+     * 
+     * @property \Bramus\Router\Router
+     */
+    private $router;
+
+    private $di;
+
+    public function __construct()
+    {
+        $this->router = new \Bramus\Router\Router();
+        $this->di = new \DI\Container();
+    }
 
     /**
      * Generic function for creating a database
@@ -62,49 +75,14 @@ class Application
     }
 
     /**
-     * Setting Up routing
-     *
-     * @return \Bramus\Router\Router
+     * Manual routing configuration
      */
-    private function routes()
+    private function confiGureRoutes()
     {
-        $router = new \Bramus\Router\Router();
-
-        $routes = require(self::CONFIG_PATH.'/routes.php');
-        
-        foreach($routes as $path => $routeInfo){
-            
-            $method = $routeInfo['http_method'];
-            $controller = $routeInfo['controller'];
-
-            switch($method){
-                case self::HTTP_GET:
-                    $router->get($path,$controller);
-                    break;
-                case self::HTTP_POST:
-                    $router->post($path,$controller);
-                    break;
-                case self::HTTP_PUT:
-                    $router->put($path,$controller);
-                    break;
-                case self::HTTP_PATCH:
-                    $router->patch($path,$controller);
-                    break;
-                case self::HTTP_OPTIONS:
-                    $router->options($path,$controller);
-                    break;
-                case self::HTTP_DELETE:
-                    $router->delete($path,$controller);
-                    break;
-                case self::HTTP_ANY;
-                    $router->any($path,$controller);
-                    break;
-                default:
-                    throw new \RuntimeException("Method ${method} is not defined");
-            }
-        }
-
-        return $router;
+        $di = $this->di;
+        $this->router->get('/',function() use ($di) {
+            \App\Controllers\BaseController::hello();
+        });
     }
 
     /**
@@ -117,7 +95,7 @@ class Application
     {
         $this->di();
 
-        $router = $this->routes();
-        $router->run();
+        $this->confiGureRoutes();
+        $this->router->run();
     }
 }
