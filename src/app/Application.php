@@ -28,9 +28,21 @@ class Application
     const HTTP_ANY='all';
 
 
-    public static function createDB()
+    /**
+     * Generic function for creating a database
+     *
+     * @param array $config Containing the values:
+     * * db_name for the database name
+     * * db_host for the database host
+     * * db_port for database port
+     * * db_user for database user
+     * * db_passwd for database password
+     * 
+     * @return void
+     * @throws Exception
+     */
+    public static function createDB(array $config)
     {
-        $config = require_once(self::CONFIG_PATH.'/database.php');
         $connectionString = 'mysql:host=%s;port=%s;dbname=%s';
         
         $dbPort = !empty($config['db_port'])?$config['db_port']:3306;
@@ -39,14 +51,24 @@ class Application
         return new PDO($connectionString,$config['db_user'],$config['db_passwd']);
     }
 
-    public function di()
+    /**
+     * Setup Dependency Injection
+     *
+     * @return void
+     */
+    private function di()
     {
-        // Db is required
-        $db = self::createDB();
+        $config = require_once(self::CONFIG_PATH.'/database.php');
+        $db = self::createDB($config);
 
     }
 
-    public function routes()
+    /**
+     * Setting Up routing
+     *
+     * @return \Bramus\Router\Router
+     */
+    private function routes()
     {
         $router = new \Bramus\Router\Router();
 
@@ -86,11 +108,17 @@ class Application
         return $router;
     }
 
+    /**
+     * Bootstrap and run the application
+     *
+     * @return void
+     * @throws Exception
+     */
     public function run()
     {
         $this->di();
+
         $router = $this->routes();
-        
         $router->run();
     }
 }
