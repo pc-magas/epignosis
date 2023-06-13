@@ -28,23 +28,24 @@ class UserController
         $userService = $di->get(UserService::class);
 
         $token = $_POST['csrf_token'];
-   
         if($token!=$session->csrf){
+
             http_response_code(403);
             echo $twig->render('login.html.twig',[
                 'url'=>'/login',
-                'csrf_token' => Generic::csrf($di->get('session')),
+                'csrf_token' => Generic::csrf($session),
                 'error'=> 'Internal Error'
             ]);
         }
 
         try {
           $userInfo =  $userService->login($_POST['email'],$_POST['pass']);
+         
           $session->user = $userInfo;
-
           header('Location: '.Generic::getAppUrl(''));
           return;
         }catch(\Exception $e){
+
             http_response_code(403);
             echo $twig->render('login.html.twig',[
                 'url'=>'/login',
@@ -52,6 +53,11 @@ class UserController
                 'error'=> $e->getMessage()
             ]);
         }
+    }
 
+    public static function logout($di){
+        $session = $di->get('session');
+        $session->user = null;
+        header('Location: '.Generic::getAppUrl(''));
     }
 }

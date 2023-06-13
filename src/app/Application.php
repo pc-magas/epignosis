@@ -90,6 +90,10 @@ class Application
         $this->router->post('/login',function() use ($di) {
             \App\Controllers\UserController::loginViaHttpPost($di);
         });
+
+        $this->router->all('/logout',function() use ($di) {
+            \App\Controllers\UserController::logout($di);
+        });
     }
 
     /**

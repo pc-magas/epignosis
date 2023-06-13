@@ -70,10 +70,17 @@ class UserService
         // Password must NOT be accessible anywhere beyond login and resgistration
         unset($result['password']);
         $result['active'] = $result['active']==1?true:false;
+
+        $sql = "UPDATE users SET last_login = :timestamp where email = :email";
+
+        $stmt= $this->dbConnection->prepare($sql);
+        $stmt->execute(['timestamp'=>\Carbon\Carbon::now()->format('Y-m-d H:i:s'),'email'=>$email]);
+
         return $result;
     }
 
-    public function registerUser(string $email, string $password, string $fullname, string $role)
+
+    public function registerUser(string $email, string $password, string $fullname, string $user_id)
     {
 
     }
