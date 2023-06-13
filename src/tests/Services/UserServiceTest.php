@@ -15,6 +15,17 @@ class UserServiceTest extends DatabaseTestCase
         
         $info = $service->login($user['email'],'1234');
         
-        $this->assertEquals((int)$user['user_id'],(int)$info['user_id']);
+        $expectedUser_id=(int)$user['user_id'];
+        $retrievedUser_id=(int)$info['user_id'];
+        $this->assertEquals($expectedUser_id,$retrievedUser_id,"User Id not the Same");
+    }
+
+    public function testUserLoginWrongPassword()
+    {
+        $user = $this->createTestUser();
+        $service = new UserService($this->dBConnection());
+
+        $this->expectException(\RuntimeException::class);
+        $service->login($user['email'],'lalalala');
     }
 }

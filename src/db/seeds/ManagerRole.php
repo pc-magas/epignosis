@@ -15,7 +15,7 @@ class ManagerRole extends AbstractSeed
      */
     public function run(): void
     {
-        $prefix=microtime();
+        $prefix=time();
         $data=[
             [
                 'email'=>$prefix."@example.com",

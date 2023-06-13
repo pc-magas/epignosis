@@ -2,12 +2,14 @@
 
 namespace Tests;
 
-use App\Application;
 use Phinx\Config\Config;
 use Phinx\Migration\Manager;
-use PHPUnit\Framework\TestCase;
 use Symfony\Component\Console\Input\StringInput;
 use Symfony\Component\Console\Output\NullOutput;
+
+use PHPUnit\Framework\TestCase;
+
+use App\Application;
 
 class DatabaseTestCase extends TestCase {
 
@@ -84,7 +86,7 @@ class DatabaseTestCase extends TestCase {
 
         $sql = "INSERT INTO users (email,fullname,password,role,active,activation_token) VALUES (:email,:fullname,:pass,:role,:active,:token);";
 
-        $prefix=microtime();
+        $prefix=time();
         $data = [
             'email'=>$prefix.'@example.com',
             'fullname'=>'TEST '.$prefix,

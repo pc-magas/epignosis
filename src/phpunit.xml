@@ -11,9 +11,12 @@
     </testsuite>
   </testsuites>
   <php>
+    <ini name='error_reporting' value='-1' />
+    
     <env name="DB_NAME" value="phpunit"/>
     <env name="DB_HOST" value="db"/>
     <env name="DB_USER" value="test_usr"/>
     <env name="DB_PASSWD" value="test_passwd"/>
+
   </php>
 </phpunit>

@@ -30,9 +30,9 @@ class UserService
      * @param string $password User Password
      * @return array With User Info
      * 
-     * @throws InvalidArgumentException If arguments are nor provided correctly
+     * @throws \InvalidArgumentException If arguments are nor provided correctly
      * @throws UserNotFoundException If User does not exist
-     * @throws RuntimeException If Password authentication fails
+     * @throws \RuntimeException If Password authentication fails
      */
     public function login(string $email, string $password): array
     {
@@ -48,7 +48,7 @@ class UserService
             throw new \InvalidArgumentException('Password is empty');
         }
 
-        if (filter_var($email, FILTER_VALIDATE_EMAIL === FALSE)) {
+        if (filter_var($email, FILTER_VALIDATE_EMAIL) === FALSE) {
             throw new \InvalidArgumentException('Email is not a valid one');
         }
 
