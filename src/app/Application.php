@@ -34,6 +34,13 @@ class Application
         $this->di = $this->diBuild();
     }
 
+    public static function baseUrl()
+    {
+        $config = self::CONFIG_PATH.'/app.php';
+        $config = require_once($config);
+        return $config['url'];
+    }
+
     /**
      * Generic function for creating a database
      *
@@ -74,9 +81,16 @@ class Application
     {
         $di = $this->di;
         $this->router->get('/',function() use ($di) {
-            \App\Controllers\BaseController::hello($di);
+            \App\Controllers\BaseController::homepage($di);
         });
 
+        $this->router->get('/login',function() use ($di) {
+            \App\Controllers\UserController::login($di);
+        });
+
+        $this->router->post('/login',function() use ($di) {
+            \App\Controllers\UserController::loginAjax($di);
+        });
     }
 
     /**

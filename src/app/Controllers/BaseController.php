@@ -2,11 +2,18 @@
 
 namespace App\Controllers;
 
+use App\Utils\Url;
+
 class BaseController
 {
-    public static function hello($di)
+    public static function homepage($di)
     {
-       var_dump($di->get('twig'));
+        $session = $di->get('session');
+        if(empty($session->user)){
+            header('Location: '.Url::getAppUrl('login'));
+        }
+
+        echo("Homepage");
     }
     
 }
