@@ -6,6 +6,7 @@ services:
     image: mariadb
     volumes:
       - './volumes/db:/var/lib/mysql'
+      - './docker/test_db.sql:/docker-entrypoint-initdb.d/test_db.sql'
     environment:
       MYSQL_RANDOM_ROOT_PASSWORD: "yes"
       MYSQL_ONETIME_PASSWORD: "yes"
