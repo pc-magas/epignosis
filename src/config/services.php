@@ -32,6 +32,6 @@ return [
         $db = $int->get('db');
         $session = $int->get('session');
 
-        return new \App\Services\UserService($db,$session);
+        return new \App\Services\UserService($db);
     }
 ];
