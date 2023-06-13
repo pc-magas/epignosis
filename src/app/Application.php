@@ -46,9 +46,6 @@ class Application
     {
         $connectionString = 'mysql:host=%s;port=%s;dbname=%s';
         
-        $env = $_ENV['APP_ENV']??'development';
-        $config = $config['environments'][$env];
-
         $dbPort = !empty($config['port'])?$config['port']:3306;
 
         $connectionString = sprintf($connectionString,$config['host'],$dbPort,$config['name']);
@@ -62,7 +59,6 @@ class Application
     private function diBuild()
     {
         $containerBuilder = new \DI\ContainerBuilder();
-        $definitions = 
         $containerBuilder->addDefinitions(self::CONFIG_PATH.'/services.php');
         return $containerBuilder->build();
     }
