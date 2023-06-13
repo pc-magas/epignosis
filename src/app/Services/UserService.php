@@ -58,8 +58,8 @@ class UserService
         $stmt->execute(['email'=>$email]);
 
         $result = $stmt->fetch(PDO::FETCH_ASSOC);
-       
-        if(!isset($result)){
+        
+        if(empty($result)){
             throw new UserNotFoundException($email);
         }
 

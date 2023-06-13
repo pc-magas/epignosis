@@ -2,6 +2,7 @@
 
 namespace Tests\Services;
 
+use App\Exceptions\UserNotFoundException;
 use App\Services\UserService;
 use Tests\DatabaseTestCase;
 
@@ -27,5 +28,18 @@ class UserServiceTest extends DatabaseTestCase
 
         $this->expectException(\RuntimeException::class);
         $service->login($user['email'],'lalalala');
+    }
+
+
+    public function testUserLoginWrongUser()
+    {
+        $user = $this->createTestUser();
+        $service = new UserService($this->dBConnection());
+
+
+        $email='l'.$user['email'];
+
+        $this->expectException(UserNotFoundException::class);
+        $service->login($email,'1234');
     }
 }
