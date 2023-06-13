@@ -15,14 +15,33 @@ class DatabaseTestCase extends TestCase {
     
     public function setUp ()
     {
-        $configArray = require(__DIR__.'../config/phinx.php');
-        
-        $config = $config['environments']['testing'];
+        // For rubistness we place the configuration here
+        // We avoid using phinx.php    
+        $migration_config = [
+            'paths' => [
+                'migrations' => '%%PHINX_CONFIG_DIR%%/../db/migrations',
+                'seeds' => '%%PHINX_CONFIG_DIR%%/../db/seeds'
+            ],
+            'environments' => [
+                'default_migration_table' => 'phinxlog',
+                'default_environment' => 'testing',
+                'testing' => [
+                    'adapter' => 'mysql',
+                    'host' =>  $_ENV['DB_HOST'],
+                    'name' => $_ENV['DB_NAME'],
+                    'user' => $_ENV['DB_USER'],
+                    'pass' => $_ENV['DB_PASSWD'],
+                    'port' => $_ENV['DB_PORT']??'3306',
+                    'charset' => 'utf8',
+                ],
+            ],
+            'version_order' => 'creation'
+        ];
 
-
-        $pdo = Application::createDB($config);
+        // Configs are same
+        $pdo = Application::createDB($migration_config['environments']['testing']);
         
-        $config = new Config($configArray);
+        $config = new Config($migration_config);
         $manager = new Manager($config, new StringInput(' '), new NullOutput());
         $manager->migrate('testing');
         // You can change default fetch mode after the seeding
