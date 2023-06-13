@@ -38,7 +38,7 @@ class Application
     public function __construct()
     {
         $this->router = new \Bramus\Router\Router();
-        $this->di = new \DI\Container();
+        $this->di = $this->diBuild();
     }
 
     /**
@@ -46,7 +46,7 @@ class Application
      *
      * @param array $config Containing the values:
      * 
-     * @return void
+     * @return PDO
      * @throws Exception
      */
     public static function createDB(array $config)
@@ -65,13 +65,12 @@ class Application
     /**
      * Setup Dependency Injection
      *
-     * @return void
      */
-    private function di()
+    private function diBuild()
     {
-        $config = require_once(self::CONFIG_PATH.'/phinx.php');
-        $db = self::createDB($config);
-
+        $containerBuilder = new \DI\ContainerBuilder();
+        $containerBuilder->addDefinitions(self::CONFIG_PATH.'/services.php');
+        return $containerBuilder->build();
     }
 
     /**
@@ -81,8 +80,9 @@ class Application
     {
         $di = $this->di;
         $this->router->get('/',function() use ($di) {
-            \App\Controllers\BaseController::hello();
+            \App\Controllers\BaseController::hello($di);
         });
+
     }
 
     /**
@@ -93,8 +93,6 @@ class Application
      */
     public function run()
     {
-        $this->di();
-
         $this->confiGureRoutes();
         $this->router->run();
     }

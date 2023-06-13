@@ -4,9 +4,9 @@ namespace App\Controllers;
 
 class BaseController
 {
-    public static function hello(...$args)
+    public static function hello($di)
     {
-       var_dump($args);
+       var_dump($di->get('db'));
     }
     
 }
