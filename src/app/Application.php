@@ -69,6 +69,7 @@ class Application
     private function diBuild()
     {
         $containerBuilder = new \DI\ContainerBuilder();
+        $definitions = 
         $containerBuilder->addDefinitions(self::CONFIG_PATH.'/services.php');
         return $containerBuilder->build();
     }
