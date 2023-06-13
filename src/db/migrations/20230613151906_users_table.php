@@ -14,7 +14,7 @@ final class UsersTable extends AbstractMigration
             ->addColumn('fullname','string',['null'=>false,'limit'=>100])
             ->addColumn('password', 'string', ['limit' => 255,'null' => false])
             ->addColumn('active','boolean',['default'=>false])
-            ->addColumn('activation_token','string',['null'=>true])
+            ->addColumn('activation_token','string',['limit' => 60,'null'=>true])
             ->addColumn('token_expiration','timestamp',['null'=>true])
             ->addColumn('role','enum',['values'=>['EMPLOYEE','MANAGER']])
             ->addColumn('last_login','timestamp',['null'=>true])

@@ -1,5 +1,7 @@
 <?php
 
+namespace Tests;
+
 use App\Application;
 use Phinx\Config\Config;
 use Phinx\Migration\Manager;
@@ -13,14 +15,14 @@ class DatabaseTestCase extends TestCase {
 
     private $migrationManager;
     
-    public function setUp ()
+    public function setUp (): void
     {
         // For rubistness we place the configuration here
         // We avoid using phinx.php    
         $migration_config = [
             'paths' => [
-                'migrations' => '%%PHINX_CONFIG_DIR%%/../db/migrations',
-                'seeds' => '%%PHINX_CONFIG_DIR%%/../db/seeds'
+                'migrations' => __DIR__.'/../db/migrations',
+                'seeds' => __DIR__.'/../db/seeds'
             ],
             'environments' => [
                 'default_migration_table' => 'phinxlog',
@@ -44,8 +46,8 @@ class DatabaseTestCase extends TestCase {
         $config = new Config($migration_config);
         $manager = new Manager($config, new StringInput(' '), new NullOutput());
         $manager->migrate('testing');
+
         // You can change default fetch mode after the seeding
-        $this->pdo->setAttribute(PDO::ATTR_DEFAULT_FETCH_MODE, PDO::FETCH_OBJ);
         $this->pdo = $pdo;
 
         $this->migrationManager = $manager;
@@ -57,9 +59,42 @@ class DatabaseTestCase extends TestCase {
         return $this->migrationManager;
     }
 
-    public function dnConnection()
+    public function dBConnection()
     {
         return $this->pdo;
     }
 
+    /**
+     * Create a Test User
+     *
+     * Default password will be 1234
+     * 
+     * @param boolean $active Whether User is active or Not
+     * @param boolean $manager Whether User is manager or Not
+     * @return array with User Info
+     */
+    public function createTestUser(bool $active=true,bool $manager=false)
+    {
+        $db = $this->dBConnection();
+
+        $sql = "INSERT INTO users (email,fullname,password,role,active,activation_token) VALUES (:email,:fullname,:pass,:role,:active,:token);";
+
+        $prefix=microtime();
+        $data = [
+            'email'=>$prefix.'@example.com',
+            'fullname'=>'TEST '.$prefix,
+            'pass'=>password_hash('1234',PASSWORD_DEFAULT),
+            'role'=>$manager?'MANAGER':'EMPLOYEE',
+            'active'=>$active,
+            'token'=> $active?NULL:substr(base64_encode(random_bytes(12)),0,60)
+        ];
+
+        $stmt=$db->prepare($sql);
+        $stmt->execute($data);
+        $id = $db->lastInsertId();
+
+        $data['user_id'] = $id;
+
+        return $data;
+    }
 }
