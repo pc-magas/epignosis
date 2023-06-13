@@ -6,3 +6,4 @@ npm-debug.log
 volumes
 .env
 .phpunit*
+src/storage/cache/*

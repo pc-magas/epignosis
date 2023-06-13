@@ -64,8 +64,7 @@ class Application
     }
 
     /**
-     * Setup Dependency Injection
-     *
+     * Setup Dependency Injection Container
      */
     private function diBuild()
     {
@@ -77,7 +76,7 @@ class Application
     /**
      * Manual routing configuration
      */
-    private function confiGureRoutes()
+    private function configureRoutes()
     {
         $di = $this->di;
         $this->router->get('/',function() use ($di) {
@@ -89,7 +88,7 @@ class Application
         });
 
         $this->router->post('/login',function() use ($di) {
-            \App\Controllers\UserController::loginAjax($di);
+            \App\Controllers\UserController::loginViaHttpPost($di);
         });
     }
 
@@ -101,7 +100,7 @@ class Application
      */
     public function run()
     {
-        $this->confiGureRoutes();
+        $this->configureRoutes();
         $this->router->run();
     }
 }

@@ -2,7 +2,7 @@
 
 namespace App\Controllers;
 
-use App\Utils\Url;
+use App\Utils\Generic;
 
 class BaseController
 {
@@ -10,7 +10,7 @@ class BaseController
     {
         $session = $di->get('session');
         if(empty($session->user)){
-            header('Location: '.Url::getAppUrl('login'));
+            header('Location: '.Generic::getAppUrl('login'));
         }
 
         echo("Homepage");

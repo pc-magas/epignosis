@@ -6,7 +6,7 @@ use Psr\Container\ContainerInterface;
 return [
     // ############## Core Srvices #################
     'db' => function(ContainerInterface $int){
-       $config = require_once(Application::CONFIG_PATH.'/phinx.php');
+       $config = require_once(Application::CONFIG_PATH.'/db.php');
        return Application::createDB($config);
     },
     'session' => function(ContainerInterface $int){
@@ -16,9 +16,10 @@ return [
         $config->setOptions($sessionOptions);
  
         $manager = new Laminas\Session\SessionManager($config);
+        $manager->setStorage(new Laminas\Session\Storage\SessionStorage());
         Laminas\Session\Container::setDefaultManager($manager);
 
-        return new  Laminas\Session\Container('session');
+        return new Laminas\Session\Container('session');
     },
     'twig' => function(ContainerInterface $int){
         $loader = new \Twig\Loader\FilesystemLoader(Application::VIEWS_DIR);

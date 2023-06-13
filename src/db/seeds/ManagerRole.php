@@ -35,5 +35,8 @@ class ManagerRole extends AbstractSeed
         ];
 
         $this->insert('users', $data);
+
+        echo("MANAGER SEEDED".PHP_EOL."DEFAULT PASSWORDS FOR ALL USERS ARE 1234".PHP_EOL);
+        print_r($data);
     }
 }
