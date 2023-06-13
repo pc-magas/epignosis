@@ -12,13 +12,9 @@ class UserServiceTest extends DatabaseTestCase
         $user = $this->createTestUser();
 
         $service = new UserService($this->dBConnection());
-
-        try {
-            $info = $service->login($user['email'],'1234');
-        } catch(\Exception $e){
-            $this->fail($e->getMessage());
-        }
-
-        $this->assertEquals($user['user_id'],$info['user_id']);
+        
+        $info = $service->login($user['email'],'1234');
+        
+        $this->assertEquals((int)$user['user_id'],(int)$info['user_id']);
     }
 }

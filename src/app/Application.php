@@ -49,7 +49,11 @@ class Application
         $dbPort = !empty($config['port'])?$config['port']:3306;
 
         $connectionString = sprintf($connectionString,$config['host'],$dbPort,$config['name']);
-        return new PDO($connectionString,$config['user'],$config['pass']);
+        
+        $pdo = new PDO($connectionString,$config['user'],$config['pass']);
+        $pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
+
+        return $pdo;
     }
 
     /**

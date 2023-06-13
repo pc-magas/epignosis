@@ -67,6 +67,8 @@ class UserService
             throw new \RuntimeException('Password fails to verify');
         }
 
+        // POassword must NOT be accessible anywhere beyond login and resgistration
+        unset($result['password']);
         return $result;
     }
 

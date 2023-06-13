@@ -53,6 +53,11 @@ class DatabaseTestCase extends TestCase {
         $this->migrationManager = $manager;
     }
 
+    public function tearDown():void
+    {
+        $this->migrationManager->rollback('testing');
+    }
+
 
     public function getMigrationManager()
     {
