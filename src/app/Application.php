@@ -12,20 +12,13 @@ class Application
      */
     const CONFIG_PATH = __DIR__.'/../config';
 
-    /**
-     * Constant used at router in order to indicate an HTTP Post
-     */
-    const HTTP_GET='GET';
+    const RESOURCES_DIR = __DIR__.'/../resources';
 
-    /**
-     * Http POST method constant used at router
-     */
-    const HTTP_POST='POST';
-    const HTTP_PUT='PUT';
-    const HTTP_PATCH='PATCH';
-    const HTTP_OPTIONS='OPTIONS';
-    const HTTP_DELETE='DELETE';
-    const HTTP_ANY='all';
+    const VIEWS_DIR = self::RESOURCES_DIR.'/views';
+
+    const STORAGE_DIR = __DIR__.'/../storage/';
+    const CACHE_DIR = self::STORAGE_DIR.'/cache';
+    const VIEW_CACHE_DIR = self::CACHE_DIR.'/views';
 
     /**
      * 

@@ -25,7 +25,8 @@
         "phlak/config": "^7.0",
         "vlucas/phpdotenv": "^5.5",
         "bramus/router": "^1.6",
-        "php-di/php-di": "^7.0"
+        "php-di/php-di": "^7.0",
+        "laminas/laminas-session": "^2.12"
     },
     "require-dev": {
         "phpunit/phpunit": "^10.2"
