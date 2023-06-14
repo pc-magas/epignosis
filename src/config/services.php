@@ -4,7 +4,7 @@ use App\Application;
 use Psr\Container\ContainerInterface;
 
 return [
-    // ############## Core Srvices #################
+    // ############## Core Services #################
     'db' => function(ContainerInterface $int){
        $config = require_once(Application::CONFIG_PATH.'/db.php');
        return Application::createDB($config);
@@ -26,6 +26,30 @@ return [
         return new \Twig\Environment($loader, [
             'cache' => Application::VIEW_CACHE_DIR,
         ]);
+    },
+    'mail' => function(ContainerInterface $int){
+
+        $mail_config = require_once Application::CONFIG_PATH.'/mail.php';
+
+        $dsn = 'smtp://';
+
+        // Urlencode is specified at mail docs
+        // https://symfony.com/doc/current/mailer.html
+        if(!empty($mail_config['username'])){
+            $dsn.=urldecode($mail_config['username']);
+        }
+
+        if(!empty($mail_config['password'])){
+            $dsn.=':'.urldecode($mail_config['password']);
+        }
+
+        $mail_config['host'] = (trim($mail_config['host'])??'localhost');
+        $dsn.="@".(trim($mail_config['host'])??'localhost');
+        
+        $dsn.=":".($mail_config['port']??25);
+
+        $transport = Symfony\Component\Mailer\Transport::fromDsn($dsn);
+        return  new Symfony\Component\Mailer\Mailer($transport);
     },
     // ################### Custom Services ######################### 
     \App\Services\UserService::class => function(ContainerInterface $int){

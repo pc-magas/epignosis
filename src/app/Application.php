@@ -21,11 +21,13 @@ class Application
     const VIEW_CACHE_DIR = self::CACHE_DIR.'/views';
 
     /**
-     * 
-     * @property \Bramus\Router\Router
+     * @var \Bramus\Router\Router
      */
     private $router;
 
+    /**
+     * @var \DI\Container
+     */
     private $di;
 
     public function __construct()
