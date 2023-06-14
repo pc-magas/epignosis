@@ -130,7 +130,18 @@ class UserServiceTest extends DatabaseTestCase
 
         $this->expectException(\App\Exceptions\UserAlreadyExistsException::class);
         $service->registerUser($user['email'],'1234',$user['fullname'],'EMPLOYEE');
+    }
 
+    public function testUserActivate()
+    {
+        $user = $this->createTestUser(false);
+
+        $conn = $this->dBConnection();
+        $mailer = $this->dummyMail();
+
+        $service = new UserService($conn,$mailer);
+        var_dump($user['token']);
+        $this->assertTrue($service->activate($user['token']));
     }
 
 }

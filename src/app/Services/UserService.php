@@ -181,4 +181,39 @@ class UserService
 
         return true;
     }
+
+    /**
+     * Activate User
+     *
+     * @param string $token
+     * @return bool
+     */
+    public function activate(string $token):bool
+    {
+        $sql = "SELECT user_id from users where activation_token=:token and active=false";
+
+        $stmt = $this->dbConnection->prepare($sql);
+        $stmt->execute(['token'=>$token]);
+        $result = $stmt->fetch(PDO::FETCH_ASSOC);
+
+        if(empty($result)){
+            return false;
+        }
+
+
+        $this->dbConnection->beginTransaction();
+
+        try{
+            $sql = "UPDATE users SET activation_token=NULL,active=true,token_expiration=NULL where user_id=:user_id";
+            $stmt = $this->dbConnection->prepare($sql);
+            $stmt->execute(['user_id'=>$result['user_id']]);
+            $this->dbConnection->commit();
+        }catch(\PDOException $e){
+            var_dump($e->getMessage());
+            $this->dbConnection->rollBack();
+            return false;
+        }
+        
+        return true;
+    }
 }

@@ -96,7 +96,7 @@ class DatabaseTestCase extends \Tests\TestBase {
             'fullname'=>'TEST '.$prefix,
             'pass'=>password_hash('1234',PASSWORD_DEFAULT),
             'role'=>$manager?'MANAGER':'EMPLOYEE',
-            'active'=>$active,
+            'active'=>$active?1:0,
             'token'=> $active?NULL:substr(base64_encode(random_bytes(12)),0,60)
         ];
 
