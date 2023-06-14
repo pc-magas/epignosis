@@ -6,6 +6,8 @@ use App\Exceptions\UserNotFoundException;
 use App\Services\UserService;
 use Tests\DatabaseTestCase;
 
+use Carbon\Carbon;
+
 class UserServiceTest extends DatabaseTestCase
 {
     public function testUserLoginSuccess()
@@ -41,5 +43,42 @@ class UserServiceTest extends DatabaseTestCase
 
         $this->expectException(UserNotFoundException::class);
         $service->login($email,'1234');
+    }
+
+    public function testRegisterManagerSuccess()
+    {
+        /**
+         * @var 
+         */
+        $mailer = $this->dummyMail();
+        $mailer->expects($this->once())->method('send');
+
+        /**
+         * @var \PDO
+         */
+        $conn = $this->dBConnection();
+
+
+        $service = new UserService($conn,$mailer);
+
+        Carbon::setTestNow(new Carbon('2023-06-12 00:00:00'));
+
+        $success = $service->registerUser('test@example.com','1234','Test User','MANAGER');
+        $this->assertTrue($success);
+
+        $stmt = $conn->prepare("SELECT * from users where email=:email");
+        $stmt->execute(['email'=>'test@example.com']);
+
+        $result = $stmt->fetch(\PDO::FETCH_ASSOC);
+
+        $this->assertEquals('test@example.com',$result['email']);
+        $this->assertTrue(password_verify('1234',$result['password']));
+
+        $this->assertEquals(0,$result['active']);
+        $this->assertNotEmpty($result['activation_token']);
+        $this->assertEquals('2023-06-13 00:00:00',$result['token_expiration']);
+
+        $this->assertEquals('MANAGER',$result['role']);
+        
     }
 }

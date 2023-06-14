@@ -2,6 +2,8 @@
 
 namespace App\Controllers;
 
+use App\Exceptions\LinkHasExpired;
+use App\Exceptions\LinkHasExpiredException;
 use App\Services\UserService;
 use App\Utils\Generic;
 
@@ -21,6 +23,10 @@ class UserController
     {
         $session = $di->get('session');
         $twig = $di->get('twig');
+
+        if(!empty($session->user)){
+            header('Location: '.Generic::getAppUrl(''));
+        }
 
         /**
          * @var UserService

@@ -2,6 +2,7 @@
 
 namespace App\Services;
 
+use App\Application;
 use App\Exceptions\LinkHasExpiredException;
 use App\Exceptions\UserAlreadyExistsException;
 use App\Exceptions\UserNotFoundException;
@@ -10,7 +11,11 @@ use App\Utils\Generic;
 
 use Carbon\Carbon;
 use Symfony\Component\Mailer\MailerInterface;
+
+use Symfony\Component\Mime\Email;
+
 use PDO;
+use Symfony\Component\Mime\Exception\InvalidArgumentException;
 
 /**
  * User Management Logic
@@ -88,20 +93,25 @@ class UserService
     }
 
     /**
-     * Reguster User
+     * Register a User
      *
      * @param string $email
      * @param string $password
      * @param string $fullname
-     * @return void
+     * @return bool
      */
-    public function registerUser(string $email, string $password, string $fullname)
+    public function registerUser(string $email, string $password, string $fullname, string $userRole):bool
     {
+
+        $userRole = trim($userRole);
+
+        if(!in_array($userRole,['MANAGER','EMPLOYEE'])){
+            throw new \InvalidArgumentException("ROLE $userRole is an invalid one");
+        }
 
         $email = trim($email);
         $fullname = trim($fullname);
         $password = trim($password);
-
 
         if(!Generic::validateEmail($email)){
             throw new \InvalidArgumentException('Email is not a valid one');
@@ -111,7 +121,7 @@ class UserService
             throw new \InvalidArgumentException('Password is empty');
         }
 
-        $password = password_hash($password);
+        $password = password_hash($password,PASSWORD_DEFAULT);
 
         try {
 
@@ -121,7 +131,8 @@ class UserService
                     password,
                     fullname,
                     activation_token,
-                    expitation_token,
+                    token_expiration,
+                    role,
                     active
                 ) 
             VALUES 
@@ -130,20 +141,21 @@ class UserService
                     :pass,
                     :fullname,
                     :token,
-                    :activation_token,
-                    :expiration_dt
+                    :expiration_dt,
+                    :role,
                     false
                 );";
 
             $stmt = $this->dbConnection->prepare($sql);
 
             // Strip tags for XSS prevention
-            $stmt->prepare([
+            $stmt->execute([
                 'email' => strip_tags($email),
                 'fullname' => strip_tags($fullname),
-                'pass' => password_hash($password),
-                'token' => substr(base64(random_bytes(100)),0,60),
-                'expiration_dt' => Carbon::now()->modify('+24 hours')->format('Y-m-d H:i:s')
+                'pass' => $password,
+                'token' => substr(base64_encode(random_bytes(100)),0,60),
+                'expiration_dt' => Carbon::now()->modify('+24 hours')->format('Y-m-d H:i:s'),
+                'role'=>$userRole
             ]);
 
         }catch(\PDOException $e){
@@ -151,11 +163,18 @@ class UserService
                 throw new UserAlreadyExistsException();
             }
 
-            throw new \RuntimeException();
+            return false;
         }
 
 
-        
+        $email = (new Email())
+            ->from('hello@example.com')
+            ->to($email)
+            ->subject('Account Activation')
+            ->text("An account has been activated please visit at ".Generic::getAppUrl("/activate")." in order for your account to be activated");
 
-    }
+        $this->mailer->send($email);
+
+        return true;
+    }  
 }

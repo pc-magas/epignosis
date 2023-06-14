@@ -19,6 +19,8 @@ class DatabaseTestCase extends TestCase {
     
     public function setUp (): void
     {
+        error_reporting(E_ALL);
+
         // For rubistness we place the configuration here
         // We avoid using phinx.php    
         $migration_config = [
