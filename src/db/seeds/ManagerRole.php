@@ -30,7 +30,8 @@ class ManagerRole extends AbstractSeed
                 'active'=>false,
                 'fullname'=> 'MANAGER Inactive'.$prefix,
                 'role'=>'MANAGER',
-                'activation_token'=>substr(base64_encode(random_bytes(12)),0,60)
+                'activation_token'=>substr(base64_encode(random_bytes(12)),0,60),
+                'token_expiration'=>\Carbon\Carbon::now()->modify("+24 hours")->format('Y-m-d H:i:s')
             ]
         ];
 

@@ -85,6 +85,10 @@ class Application
             \App\Controllers\BaseController::homepage($di);
         });
 
+        $this->router->get('/user/a/{token}',function($token) use ($di) {
+            \App\Controllers\UserController::activate($di,$token);
+        });
+
         $this->router->get('/login',function() use ($di) {
             \App\Controllers\UserController::login($di);
         });
@@ -96,6 +100,8 @@ class Application
         $this->router->all('/logout',function() use ($di) {
             \App\Controllers\UserController::logout($di);
         });
+
+
     }
 
     /**

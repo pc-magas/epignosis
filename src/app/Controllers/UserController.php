@@ -9,6 +9,7 @@ use App\Utils\Generic;
 
 class UserController
 {
+
     public static function login($di)
     {
         $twig = $di->get('twig');
@@ -34,8 +35,7 @@ class UserController
         $userService = $di->get(UserService::class);
 
         $token = $_POST['csrf_token'];
-        if($token!=$session->csrf){
-
+        if($token!=$session->csrf) {
             http_response_code(403);
             echo $twig->render('login.html.twig',[
                 'url'=>'/login',
@@ -65,5 +65,22 @@ class UserController
         $session = $di->get('session');
         $session->user = null;
         header('Location: '.Generic::getAppUrl(''));
+    }
+
+    public static function activate($di,$token)
+    {
+        /**
+         * @var UserService
+         */
+        $userService = $di->get(UserService::class);
+
+        if(!$userService->activate($token)){
+            http_response_code(404);
+            $twig = $di->get('twig');
+            echo $twig->render('404.html.twig');
+            return;
+        }
+
+        header('Location: '.Generic::getAppUrl('/login'));
     }
 }

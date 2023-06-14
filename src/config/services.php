@@ -54,8 +54,8 @@ return [
     // ################### Custom Services ######################### 
     \App\Services\UserService::class => function(ContainerInterface $int){
         $db = $int->get('db');
-        $session = $int->get('session');
+        $mail = $int->get('mail');
 
-        return new \App\Services\UserService($db);
+        return new \App\Services\UserService($db,$mail);
     }
 ];
