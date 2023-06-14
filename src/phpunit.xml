@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <phpunit 
+    colors="true"
     xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
     xsi:noNamespaceSchemaLocation="https://schema.phpunit.de/10.2/phpunit.xsd"
     bootstrap="vendor/autoload.php" 
@@ -12,7 +13,8 @@
   </testsuites>
   <php>
     <ini name='error_reporting' value='-1' />
-    
+
+    <env name="APP_URL" value="http://example.com"/>
     <env name="DB_NAME" value="phpunit"/>
     <env name="DB_HOST" value="db"/>
     <env name="DB_USER" value="test_usr"/>
