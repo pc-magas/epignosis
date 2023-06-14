@@ -83,7 +83,7 @@ class UserServiceTest extends DatabaseTestCase
 
     public function testUserRegisterEmployee()
     {
-          /**
+        /**
          * @var 
          */
         $mailer = $this->dummyMail();
@@ -116,4 +116,21 @@ class UserServiceTest extends DatabaseTestCase
 
         $this->assertEquals('EMPLOYEE',$result['role']);
     }
+
+    public function testUserRegisterFailIfUserExists()
+    {
+        $user = $this->createTestUser();
+        /**
+         * @var \PDO
+         */
+        $conn = $this->dBConnection();
+        $mailer = $this->dummyMail();
+
+        $service = new UserService($conn,$mailer);
+
+        $this->expectException(\App\Exceptions\UserAlreadyExistsException::class);
+        $service->registerUser($user['email'],'1234',$user['fullname'],'EMPLOYEE');
+
+    }
+
 }

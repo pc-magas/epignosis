@@ -80,7 +80,9 @@ class DatabaseTestCase extends \Tests\TestBase {
      * 
      * @param boolean $active Whether User is active or Not
      * @param boolean $manager Whether User is manager or Not
+     * 
      * @return array with User Info
+     * 
      */
     public function createTestUser(bool $active=true,bool $manager=false)
     {

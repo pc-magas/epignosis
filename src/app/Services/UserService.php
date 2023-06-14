@@ -159,7 +159,11 @@ class UserService
             ]);
 
         }catch(\PDOException $e){
-            if((int)$e->getCode() == 2300){
+
+            // Email has Unique index therefore I use the SQL code for duplicate record
+            // https://mariadb.com/kb/en/mariadb-error-codes/
+            // $e->getCode() stores the codes mentioned above
+            if((int)$e->getCode() == 23000){
                 throw new UserAlreadyExistsException();
             }
 
