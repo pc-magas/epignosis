@@ -24,4 +24,14 @@ class Generic
 
         return $token;
     }
+
+    public static function validateEmail(string $email)
+    {
+        if(empty($email)){
+            throw new \InvalidArgumentException('Email is empty');
+        }
+
+
+        return filter_var($email, FILTER_VALIDATE_EMAIL) === FALSE?false:true;
+    }
 }
