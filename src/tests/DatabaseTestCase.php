@@ -104,4 +104,14 @@ class DatabaseTestCase extends TestCase {
 
         return $data;
     }
+
+    /**
+     * Mocked email for just providing a dummy object
+     *
+     * @return \Symfony\Component\Mailer\MailerInterface
+     */
+    public function dummyMail():\Symfony\Component\Mailer\MailerInterface
+    {
+        return $this->createMock(\Symfony\Component\Mailer\MailerInterface::class);
+    }
 }

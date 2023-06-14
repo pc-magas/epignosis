@@ -12,7 +12,7 @@ class UserServiceTest extends DatabaseTestCase
     {
         $user = $this->createTestUser();
 
-        $service = new UserService($this->dBConnection());
+        $service = new UserService($this->dBConnection(),$this->dummyMail());
         
         $info = $service->login($user['email'],'1234');
         
@@ -24,7 +24,7 @@ class UserServiceTest extends DatabaseTestCase
     public function testUserLoginWrongPassword()
     {
         $user = $this->createTestUser();
-        $service = new UserService($this->dBConnection());
+        $service = new UserService($this->dBConnection(),$this->dummyMail());
 
         $this->expectException(\RuntimeException::class);
         $service->login($user['email'],'lalalala');
@@ -34,7 +34,7 @@ class UserServiceTest extends DatabaseTestCase
     public function testUserLoginWrongUser()
     {
         $user = $this->createTestUser();
-        $service = new UserService($this->dBConnection());
+        $service = new UserService($this->dBConnection(),$this->dummyMail());
 
 
         $email='l'.$user['email'];

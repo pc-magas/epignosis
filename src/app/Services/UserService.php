@@ -2,9 +2,15 @@
 
 namespace App\Services;
 
-use PDO;
-
+use App\Exceptions\LinkHasExpiredException;
+use App\Exceptions\UserAlreadyExistsException;
 use App\Exceptions\UserNotFoundException;
+
+use App\Utils\Generic;
+
+use Carbon\Carbon;
+use Symfony\Component\Mailer\MailerInterface;
+use PDO;
 
 /**
  * User Management Logic
@@ -18,9 +24,15 @@ class UserService
      */
     private $dbConnection;
 
-    public function __construct(PDO $dbConnection)
+    /**
+     * @var MailerInterface
+     */
+    private $mailer ;
+
+    public function __construct(PDO $dbConnection, MailerInterface $mailer)
     {
         $this->dbConnection = $dbConnection;
+        $this->mailer = $mailer;
     }
 
     /**
@@ -40,16 +52,12 @@ class UserService
 
         $password = trim($password);
 
-        if(empty($email)){
-            throw new \InvalidArgumentException('Email is empty');
+        if(!Generic::validateEmail($email)){
+            throw new \InvalidArgumentException('Email is not a valid one');
         }
 
         if(empty($password)){
             throw new \InvalidArgumentException('Password is empty');
-        }
-
-        if (filter_var($email, FILTER_VALIDATE_EMAIL) === FALSE) {
-            throw new \InvalidArgumentException('Email is not a valid one');
         }
 
         $sql = "SELECT * from users where email = :email and active=true LIMIT 1";
@@ -79,9 +87,75 @@ class UserService
         return $result;
     }
 
-
-    public function registerUser(string $email, string $password, string $fullname, string $user_id)
+    /**
+     * Reguster User
+     *
+     * @param string $email
+     * @param string $password
+     * @param string $fullname
+     * @return void
+     */
+    public function registerUser(string $email, string $password, string $fullname)
     {
+
+        $email = trim($email);
+        $fullname = trim($fullname);
+        $password = trim($password);
+
+
+        if(!Generic::validateEmail($email)){
+            throw new \InvalidArgumentException('Email is not a valid one');
+        }
+
+        if(empty($password)){
+            throw new \InvalidArgumentException('Password is empty');
+        }
+
+        $password = password_hash($password);
+
+        try {
+
+            $sql = "INSERT INTO users 
+                (
+                    email,
+                    password,
+                    fullname,
+                    activation_token,
+                    expitation_token,
+                    active
+                ) 
+            VALUES 
+                (
+                    :email,
+                    :pass,
+                    :fullname,
+                    :token,
+                    :activation_token,
+                    :expiration_dt
+                    false
+                );";
+
+            $stmt = $this->dbConnection->prepare($sql);
+
+            // Strip tags for XSS prevention
+            $stmt->prepare([
+                'email' => strip_tags($email),
+                'fullname' => strip_tags($fullname),
+                'pass' => password_hash($password),
+                'token' => substr(base64(random_bytes(100)),0,60),
+                'expiration_dt' => Carbon::now()->modify('+24 hours')->format('Y-m-d H:i:s')
+            ]);
+
+        }catch(\PDOException $e){
+            if((int)$e->getCode() == 2300){
+                throw new UserAlreadyExistsException();
+            }
+
+            throw new \RuntimeException();
+        }
+
+
+        
 
     }
 }
