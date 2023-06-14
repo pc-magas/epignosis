@@ -34,3 +34,10 @@ services:
     volumes:
       - './src:/var/www/html'
       - "./docker/nginx.conf:/etc/nginx/nginx.conf:ro"
+
+  # Test Mail tool
+  mailhog:
+    image: mailhog/mailhog
+    ports:
+      - 1025:1025
+      - 8025:8025
