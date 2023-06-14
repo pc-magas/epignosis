@@ -7,11 +7,10 @@ use Phinx\Migration\Manager;
 use Symfony\Component\Console\Input\StringInput;
 use Symfony\Component\Console\Output\NullOutput;
 
-use PHPUnit\Framework\TestCase;
 
 use App\Application;
 
-class DatabaseTestCase extends TestCase {
+class DatabaseTestCase extends \Tests\TestBase {
 
     private $pdo;
 
@@ -59,6 +58,7 @@ class DatabaseTestCase extends TestCase {
 
     public function tearDown():void
     {
+        parent::tearDown();
         $this->migrationManager->rollback('testing');
     }
 
@@ -107,13 +107,5 @@ class DatabaseTestCase extends TestCase {
         return $data;
     }
 
-    /**
-     * Mocked email for just providing a dummy object
-     *
-     * @return \Symfony\Component\Mailer\MailerInterface
-     */
-    public function dummyMail():\Symfony\Component\Mailer\MailerInterface
-    {
-        return $this->createMock(\Symfony\Component\Mailer\MailerInterface::class);
-    }
+   
 }

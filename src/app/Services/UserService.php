@@ -176,5 +176,5 @@ class UserService
         $this->mailer->send($email);
 
         return true;
-    }  
+    }
 }
