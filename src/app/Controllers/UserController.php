@@ -30,21 +30,20 @@ class UserController extends \App\Controllers\BaseController
         if(!empty($session->user)){
             header('Location: '.Generic::getAppUrl(''));
         }
+    
+        if($this->validateCSRF($_POST['csrf_token'])){
+            http_response_code(403);
+            echo $twig->render('login.html.twig',[
+                'url'=>'/login',
+                'csrf_token' => $this->getCsrfToken(),
+                'error'=> 'Internal Error'
+            ]);
+        }
 
         /**
          * @var UserService
          */
         $userService = $di->get(UserService::class);
-
-        $token = $_POST['csrf_token'];
-        if($token!=$session->csrf) {
-            http_response_code(403);
-            echo $twig->render('login.html.twig',[
-                'url'=>'/login',
-                'csrf_token' => Generic::csrf($session),
-                'error'=> 'Internal Error'
-            ]);
-        }
 
         try {
           $userInfo =  $userService->login($_POST['email'],$_POST['pass']);
@@ -57,7 +56,7 @@ class UserController extends \App\Controllers\BaseController
             http_response_code(403);
             echo $twig->render('login.html.twig',[
                 'url'=>'/login',
-                'csrf_token' => Generic::csrf($di->get('session')),
+                'csrf_token' => $this->getCsrfToken(),
                 'error'=> $e->getMessage()
             ]);
         }
@@ -65,7 +64,7 @@ class UserController extends \App\Controllers\BaseController
 
     public function logout($di){
         $di = $this->getServiceContainer();
-        
+
         $session = $di->get('session');
         $session->user = null;
         header('Location: '.Generic::getAppUrl(''));
@@ -95,12 +94,12 @@ class UserController extends \App\Controllers\BaseController
         $di = $this->getServiceContainer();
         $session = $di->get('session');
 
-        if(empty($session->user) || $session->user['role'] != 'MANAGER'){
+        if($this->logedinAsManager()){
             http_response_code(403);
             header('Location: '.Generic::getAppUrl(''));
         }
 
-        $csrfToken = Generic::csrf($session);
+        $csrfToken = $this->getCsrfToken();
 
         $twig = $di->get('twig');
         echo $twig->render('modify_user.html.twig',[
@@ -115,22 +114,14 @@ class UserController extends \App\Controllers\BaseController
         $di = $this->getServiceContainer();
         $session = $di->get('session');
 
-        if(empty($session->user)){
-            http_response_code(403);
-            echo json_encode(['msg'=>'User is Not Logged In']);
-            return;
-        }
-
-        if(empty($session->user['role'] != 'Manager')){
+        if(!$this->logedinAsManager()){
             http_response_code(403);
             echo json_encode(['msg'=>'User is Not Authorized To perform this Action']);
         }
 
-        $csrf = Generic::csrf($session);
-        if($csrf != $_POST['csrf']){
+        if($this->validateCSRF($_POST['csrf'])){
             http_response_code(403);
             echo json_encode(['msg'=>'User is Not Authorized To perform this Action']);
-
         }
 
     }
