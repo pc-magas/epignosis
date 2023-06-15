@@ -270,4 +270,48 @@ class UserServiceTest extends DatabaseTestCase
         $this->assertEquals($user['fullname'],$dataToCheck['fullname']);
     }
     
+    public function testUpdatePasswordEmptyPassword()
+    {
+        $user = $this->createTestUser();
+        
+        $conn = $this->dBConnection();
+        $mailer = $this->dummyMail();
+
+        $service = new UserService($conn,$mailer);
+
+        $this->expectException(\InvalidArgumentException::class);
+        $service->updatePassword($user['user_id'],'');
+
+        $sql = "SELECT * from users where user_id = ? LIMIT 1";
+
+        $stmt=$conn->prepare($sql);
+        $stmt->execute([$user['user_id']]);
+        $dataToCheck = $stmt->fetch(\PDO::FETCH_ASSOC);
+
+        $this->assertTrue(password_verify('1234',$dataToCheck['password']));
+
+    }
+
+
+    public function testUpdatePassword()
+    {
+        $user = $this->createTestUser();
+        
+        $conn = $this->dBConnection();
+        $mailer = $this->dummyMail();
+
+        $service = new UserService($conn,$mailer);
+
+        $this->expectException(\InvalidArgumentException::class);
+        $service->updatePassword($user['user_id'],'3456');
+
+        $sql = "SELECT * from users where user_id = ? LIMIT 1";
+
+        $stmt=$conn->prepare($sql);
+        $stmt->execute([$user['user_id']]);
+        $dataToCheck = $stmt->fetch(\PDO::FETCH_ASSOC);
+
+        $this->assertTrue(password_verify('3456',$dataToCheck['password']));
+
+    }
 }

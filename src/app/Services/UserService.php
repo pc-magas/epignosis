@@ -370,7 +370,7 @@ class UserService
      * @throws InvalidArgumentException
      * 
      */
-    public function resetPassword(int $user_id, string $pass):bool
+    public function updatePassword(int $user_id, string $pass):bool
     {
         if(!$this->userExists($user_id)){
             return false;
