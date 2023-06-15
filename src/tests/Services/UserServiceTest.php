@@ -165,4 +165,71 @@ class UserServiceTest extends DatabaseTestCase
         $this->assertFalse($service->deleteUser(1));
     }
 
+    public function testUserModifyEmailOnly()
+    {
+        $user = $this->createTestUser();
+        
+        $conn = $this->dBConnection();
+        $mailer = $this->dummyMail();
+
+        $service = new UserService($conn,$mailer);
+        $result = $service->modifyEmailAndName($user['user_id'],'tsak@example.com');
+
+        $this->assertTrue($result);
+
+        $sql = "SELECT * from users where user_id = ? LIMIT 1";
+
+        $stmt=$conn->prepare($sql);
+        $stmt->execute([$user['user_id']]);
+        $dataToCheck = $stmt->fetch(\PDO::FETCH_ASSOC);
+
+        $this->assertEquals($user['user_id'],$dataToCheck['user_id']);
+        $this->assertEquals($user['fullname'],$dataToCheck['fullname']);
+        $this->assertEquals('tsak@example.com',$dataToCheck['email']);
+    }
+
+
+    public function testUserModifyNameOnly()
+    {
+        $user = $this->createTestUser();
+        
+        $conn = $this->dBConnection();
+        $mailer = $this->dummyMail();
+
+        $service = new UserService($conn,$mailer);
+        $result = $service->modifyEmailAndName($user['user_id'],'','Namae User');
+        $this->assertTrue($result);
+
+        $sql = "SELECT * from users where user_id = ? LIMIT 1";
+
+        $stmt=$conn->prepare($sql);
+        $stmt->execute([$user['user_id']]);
+        $dataToCheck = $stmt->fetch(\PDO::FETCH_ASSOC);
+
+        $this->assertEquals($user['user_id'],$dataToCheck['user_id']);
+        $this->assertEquals($user['email'],$dataToCheck['email']);
+        $this->assertEquals('Namae User',$dataToCheck['fullname']);
+    }
+
+    public function testUserModifyNameAndEmail()
+    {
+        $user = $this->createTestUser();
+        
+        $conn = $this->dBConnection();
+        $mailer = $this->dummyMail();
+
+        $service = new UserService($conn,$mailer);
+        $result = $service->modifyEmailAndName($user['user_id'],'tsak@example.com','Namae User');
+        $this->assertTrue($result);
+
+        $sql = "SELECT * from users where user_id = ? LIMIT 1";
+
+        $stmt=$conn->prepare($sql);
+        $stmt->execute([$user['user_id']]);
+        $dataToCheck = $stmt->fetch(\PDO::FETCH_ASSOC);
+
+        $this->assertEquals($user['user_id'],$dataToCheck['user_id']);
+        $this->assertEquals('tsak@example.com',$dataToCheck['email']);
+        $this->assertEquals('Namae User',$dataToCheck['fullname']);
+    }
 }

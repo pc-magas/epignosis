@@ -22,11 +22,31 @@ use Symfony\Component\Mime\Exception\InvalidArgumentException;
  */
 class UserService
 {
-
+    /**
+     * Error Code for empty email
+     */
     const EMPTY_EMAIL_ERROR = 1;
-    const INVALID_EMAIL_ERROR = 2;
+
+    /**
+     * Error code for empty password
+     */
     const EMPTY_PASSWORD_ERROR = 3;
+    
+    /**
+     * Error code for invalid email
+     */
+
+    const INVALID_EMAIL_ERROR = 2;
+
+    /**
+     * Error code for invalid role
+     */
     const INVALID_ROLE_ERROR = 4;
+
+    /**
+     * Error code for all parameters are missing or invalid
+     */
+    const INVALID_PARAMS_ALL = 0;
 
     /**
      * Database Handler
@@ -224,12 +244,12 @@ class UserService
     }
 
     /**
-     * Delete User
+     * Check if User exists
      *
-     * @param integer $user_id User Id
+     * @param integer $user_id
      * @return boolean
      */
-    public function deleteUser(int $user_id): bool
+    private function userExists(int $user_id): bool
     {
         if($user_id < 0 ){
             return false;
@@ -240,8 +260,19 @@ class UserService
         $stmt = $this->dbConnection->prepare($sql);
         $stmt->execute(['user_id' => $user_id]);
         $result = $stmt->fetch(PDO::FETCH_COLUMN);
+        return $result == 1;
 
-        if($result == 0){
+    }
+
+    /**
+     * Delete User
+     *
+     * @param integer $user_id User Id
+     * @return boolean
+     */
+    public function deleteUser(int $user_id): bool
+    {
+        if(!$this->userExists($user_id)){
             return false;
         }
 
@@ -263,4 +294,112 @@ class UserService
 
         return true;
     }
+
+    /**
+     * Edits email and user's name
+     * Password update needs to be handled differently.
+     * 
+     * Empty values are ignored.
+     * 
+     * @param integer $user_id User's Id
+     * @param string $email User's name
+     * @param string $fullname 
+     * @return bool
+     */
+    public function modifyEmailAndName(int $user_id,?string $email=null, ?string $fullname=null): bool
+    {
+        if(!$this->userExists($user_id)){
+            return false;
+        }
+
+        $sql = "UPDATE users set %s where user_id = :user_id";
+        $updateColSql = [];
+
+        $columnsToUpdate = ['user_id'=>$user_id];
+
+        $email = trim($email);
+
+        if(!empty($email)){
+            if(!Generic::validateEmail($email)){
+                throw new \InvalidArgumentException('Email is not a valid one',self::INVALID_EMAIL_ERROR);
+            }
+            
+            $updateColSql[] = "email=:email";
+            $columnsToUpdate['email']=$email;
+        }
+        
+        $fullname = trim($fullname);
+
+        if(!empty($fullname)){
+            $updateColSql[] = "fullname=:fullname";
+            $columnsToUpdate['fullname']=$fullname;
+        }
+
+        $updateSql = trim(implode(',',$updateColSql),',');
+
+        $sql = sprintf($sql,$updateSql);
+
+        if(count($updateColSql) == 0){
+            throw new \InvalidArgumentException('Email is not a valid one',self::INVALID_PARAMS_ALL);
+        }
+
+        $this->dbConnection->beginTransaction();
+
+        try {
+            
+            $stmt = $this->dbConnection->prepare($sql);
+            $stmt->execute($columnsToUpdate);
+
+            $this->dbConnection->commit();
+        }catch(\PDOException $e) {
+            $this->dbConnection->rollBack();
+            return false;
+        }
+
+        return true;
+    }
+
+    /**
+     * Update User's password
+     * 
+     * @param integer $user_id User's user_id
+     * @param string $pass User's password
+     * 
+     * @return bool
+     * 
+     * @throws InvalidArgumentException
+     * 
+     */
+    public function resetPassword(int $user_id, string $pass):bool
+    {
+        if(!$this->userExists($user_id)){
+            return false;
+        }
+
+        if(empty($password)){
+            throw new \InvalidArgumentException('Password is empty',self::EMPTY_PASSWORD_ERROR);
+        }
+
+        $password = password_hash($password,PASSWORD_DEFAULT);
+
+        $sql = "UPDATE users set password=:password where user_id = :user_id";
+
+        $this->dbConnection->beginTransaction();
+
+        try {
+            
+            $stmt = $this->dbConnection->prepare($sql);
+            $stmt->execute(['user_id'=>$user_id,'pass'=>$password]);
+
+            $this->dbConnection->commit();
+        }catch(\PDOException $e) {
+            $this->dbConnection->rollBack();
+
+            return false;
+        }
+
+        return true;
+    }
+
+    
 }
