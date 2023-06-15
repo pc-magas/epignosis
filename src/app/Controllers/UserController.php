@@ -94,7 +94,7 @@ class UserController extends \App\Controllers\BaseController
         $di = $this->getServiceContainer();
         $session = $di->get('session');
 
-        if($this->logedinAsManager()){
+        if(!$this->logedinAsManager()){
             http_response_code(403);
             header('Location: '.Generic::getAppUrl(''));
         }
@@ -112,6 +112,7 @@ class UserController extends \App\Controllers\BaseController
     public function registerAction()
     {
         $di = $this->getServiceContainer();
+        file_put_contents($_SERVER['DOCUMENT_ROOT'].'/debug.txt',json_encode($this->logedinAsManager()));
 
         if(!$this->logedinAsManager() || !$this->validateCSRF($_POST['csrf']) ){
             $this->jsonResponse(['msg'=>'User is Not Authorized To perform this Action'],403);
@@ -122,12 +123,12 @@ class UserController extends \App\Controllers\BaseController
         try {
             
             if($userService->registerUser($_POST['email'],$_POST['password'],$_POST['fullname'],$_POST['role'])){
-                $this->jsonResponse(['msg'=>'User sucessfully has registered'],200);
+                $this->jsonResponse(['msg'=>'User sucessfully has registered. An email is sent to '.$_POST['email']],200);
             } else {
                 $this->jsonResponse(['msg'=>'Registration failed'],500);
             }
         } catch(\InvalidArgumentException $e) {
-            http_response_code(400);
+
             $field = '';
             $type = 'empty';
 
@@ -146,15 +147,13 @@ class UserController extends \App\Controllers\BaseController
                     break;
             }
 
-            echo json_encode(['field'=>$field,'type'=>$type]);
+            $this->jsonResponse(['field'=>$field,'type'=>$type],400);
             return;
         } catch(\App\Exceptions\UserAlreadyExistsException $e){
-            http_response_code(409);
-            echo json_response(['email'=>$_POST['email']]);
+            $this->jsonResponse(['email'=>$_POST['email']],409);
             return ;
         } catch(\Exception $e) {
-            http_response_code(500);
-            echo json_response(['email'=>$_POST['email']]);
+            $this->jsonResponse(['msg'=>'Registration failled'],500);
             return;
         }
     }

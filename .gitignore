@@ -7,3 +7,5 @@ volumes
 .env
 .phpunit*
 src/storage/cache/*
+src/www/debug.txt
+debug.txt

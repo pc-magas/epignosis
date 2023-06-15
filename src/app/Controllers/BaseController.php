@@ -38,7 +38,7 @@ class BaseController
     public function validateCSRF(string $token):bool
     {
         $csrf = $this->getCsrfToken();
-        
+        file_put_contents($_SERVER['DOCUMENT_ROOT'].'/debug.txt',$csrf,FILE_APPEND);
         return $csrf === $token;
     }
 
@@ -46,7 +46,7 @@ class BaseController
     /**
      * Retrieve CSRF token
      *
-     * @return void
+     * @return string
      */
     public function getCsrfToken():string
     {
@@ -73,9 +73,16 @@ class BaseController
     public function logedinAsManager():bool
     {
         $session = $this->getServiceContainer()->get('session');
-        return empty($session->user) || (!empty($session->user['role']) && $session->user['role'] != 'MANAGER');
+        return !empty($session->user) && !empty($session->user['role']) && $session->user['role'] == 'MANAGER';
     }
 
+    /**
+     * Retuern Json Response
+     *
+     * @param mixed $value Value to be JSON encoded
+     * @param integer $statusCode Http status code
+     * @return void Because it echoes the content.
+     */
     public function jsonResponse(mixed $value,int $statusCode = 200)
     {
         http_response_code($statusCode);
