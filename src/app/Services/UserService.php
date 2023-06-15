@@ -222,4 +222,45 @@ class UserService
         
         return true;
     }
+
+    /**
+     * Delete User
+     *
+     * @param integer $user_id User Id
+     * @return boolean
+     */
+    public function deleteUser(int $user_id): bool
+    {
+        if($user_id < 0 ){
+            return false;
+        }
+
+        $sql = "SELECT EXISTS(SELECT 1 from users where user_id = :user_id LIMIT 1)";
+        
+        $stmt = $this->dbConnection->prepare($sql);
+        $stmt->execute(['user_id' => $user_id]);
+        $result = $stmt->fetch(PDO::FETCH_COLUMN);
+
+        if($result == 0){
+            return false;
+        }
+
+        $this->dbConnection->beginTransaction();
+        try {
+
+            // Vaccations will be cascaded. A cascade trigger must be placed
+            $sql = "DELETE FROM users where user_id=:user_id";
+            $stmt = $this->dbConnection->prepare($sql);
+            $stmt->execute(['user_id' => $user_id]);
+
+            $this->dbConnection->commit();
+
+        } catch(\PDOException $e) {
+            $this->dbConnection->rollBack();
+
+            return false;
+        }
+
+        return true;
+    }
 }

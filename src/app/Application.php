@@ -30,8 +30,11 @@ class Application
      */
     private $di;
 
-    public function __construct()
+    private $console;
+
+    public function __construct(bool $console = false)
     {
+        $this->console = $console;
         $this->router = new \Bramus\Router\Router();
         $this->di = $this->diBuild();
     }
@@ -63,6 +66,11 @@ class Application
         $pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
 
         return $pdo;
+    }
+
+    protected function getDi()
+    {
+        return $this->di;
     }
 
     /**
@@ -119,7 +127,10 @@ class Application
      */
     public function run()
     {
-        $this->configureRoutes();
-        $this->router->run();
+        if(!$this->console){
+            $this->configureRoutes();
+            $this->router->run();
+            return;
+        }
     }
 }

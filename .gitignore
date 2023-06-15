@@ -7,5 +7,8 @@ volumes
 .env
 .phpunit*
 src/storage/cache/*
+
+# Debug and development aiding files
 src/www/debug.txt
 debug.txt
+stackoverflow.php

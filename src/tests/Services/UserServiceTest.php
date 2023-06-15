@@ -120,9 +120,7 @@ class UserServiceTest extends DatabaseTestCase
     public function testUserRegisterFailIfUserExists()
     {
         $user = $this->createTestUser();
-        /**
-         * @var \PDO
-         */
+      
         $conn = $this->dBConnection();
         $mailer = $this->dummyMail();
 
@@ -142,6 +140,29 @@ class UserServiceTest extends DatabaseTestCase
         $service = new UserService($conn,$mailer);
         var_dump($user['token']);
         $this->assertTrue($service->activate($user['token']));
+    }
+
+    public function testUserDeleteExists()
+    {
+        $user = $this->createTestUser();
+        
+        $conn = $this->dBConnection();
+        $mailer = $this->dummyMail();
+
+        $service = new UserService($conn,$mailer);
+        $this->assertTrue($service->deleteUser($user['user_id']));
+
+    }
+
+    public function testUserDeleteNonExists()
+    {
+        $conn = $this->dBConnection();
+        $conn->exec("DELETE FROM users");
+
+        $mailer = $this->dummyMail();
+
+        $service = new UserService($conn,$mailer);
+        $this->assertFalse($service->deleteUser(1));
     }
 
 }

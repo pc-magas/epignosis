@@ -112,7 +112,6 @@ class UserController extends \App\Controllers\BaseController
     public function registerAction()
     {
         $di = $this->getServiceContainer();
-        file_put_contents($_SERVER['DOCUMENT_ROOT'].'/debug.txt',json_encode($this->logedinAsManager()));
 
         if(!$this->logedinAsManager() || !$this->validateCSRF($_POST['csrf']) ){
             $this->jsonResponse(['msg'=>'User is Not Authorized To perform this Action'],403);
@@ -157,4 +156,6 @@ class UserController extends \App\Controllers\BaseController
             return;
         }
     }
+
+    
 }

@@ -68,7 +68,7 @@ class DatabaseTestCase extends \Tests\TestBase {
         return $this->migrationManager;
     }
 
-    public function dBConnection()
+    public function dBConnection(): \PDO
     {
         return $this->pdo;
     }
