@@ -7,11 +7,12 @@ use App\Exceptions\LinkHasExpiredException;
 use App\Services\UserService;
 use App\Utils\Generic;
 
-class UserController
+class UserController extends \App\Controllers\BaseController
 {
 
-    public static function login($di)
+    public function login()
     {
+        $di=$this->getServiceContainer();
         $twig = $di->get('twig');
 
         echo $twig->render('login.html.twig',[
@@ -20,8 +21,9 @@ class UserController
         ]);
     }
 
-    public static function loginViaHttpPost($di)
+    public function loginViaHttpPost()
     {
+        $di=$this->getServiceContainer();
         $session = $di->get('session');
         $twig = $di->get('twig');
 
@@ -61,14 +63,18 @@ class UserController
         }
     }
 
-    public static function logout($di){
+    public function logout($di){
+        $di = $this->getServiceContainer();
+        
         $session = $di->get('session');
         $session->user = null;
         header('Location: '.Generic::getAppUrl(''));
     }
 
-    public static function activate($di,$token)
+    public function activate($token)
     {
+        $di = $this->getServiceContainer();
+        
         /**
          * @var UserService
          */
@@ -84,18 +90,14 @@ class UserController
         header('Location: '.Generic::getAppUrl('/login'));
     }
 
-    public static function registerUser($di)
+    public function registerUser()
     {
+        $di = $this->getServiceContainer();
         $session = $di->get('session');
 
-        if(empty($session->user)){
+        if(empty($session->user) || $session->user['role'] != 'MANAGER'){
             http_response_code(403);
-            echo json_encode(['msg'=>'User is Not Logged In']);
-        }
-
-        if(empty($session->user['role'] != 'Manager')){
-            http_response_code(403);
-            echo json_encode(['msg'=>'User is Not Authorized To perform this Action']);
+            header('Location: '.Generic::getAppUrl(''));
         }
 
         $csrfToken = Generic::csrf($session);
@@ -104,17 +106,19 @@ class UserController
         echo $twig->render('modify_user.html.twig',[
             'csrf'=>$csrfToken,
             'title'=>'User Registration',
-            'action'=>Generic::getAppUrl('/register')
+            'action'=>Generic::getAppUrl('/user/add')
         ]);
     }
 
-    public static function registerAction($di)
+    public function registerAction()
     {
+        $di = $this->getServiceContainer();
         $session = $di->get('session');
 
         if(empty($session->user)){
             http_response_code(403);
             echo json_encode(['msg'=>'User is Not Logged In']);
+            return;
         }
 
         if(empty($session->user['role'] != 'Manager')){
@@ -122,7 +126,12 @@ class UserController
             echo json_encode(['msg'=>'User is Not Authorized To perform this Action']);
         }
 
+        $csrf = Generic::csrf($session);
+        if($csrf != $_POST['csrf']){
+            http_response_code(403);
+            echo json_encode(['msg'=>'User is Not Authorized To perform this Action']);
 
+        }
 
     }
 }

@@ -82,31 +82,31 @@ class Application
     {
         $di = $this->di;
         $this->router->get('/',function() use ($di) {
-            \App\Controllers\BaseController::homepage($di);
+            $di->get(\App\Controllers\HomepageController::class)->homepage();
         });
 
         $this->router->get('/user/a/{token}',function($token) use ($di) {
-            \App\Controllers\UserController::activate($di,$token);
+            $di->get(\App\Controllers\UserController::class)->activate($token);
         });
 
         $this->router->get('/login',function() use ($di) {
-            \App\Controllers\UserController::login($di);
+            $di->get(\App\Controllers\UserController::class)->login();
         });
 
         $this->router->post('/login',function() use ($di) {
-            \App\Controllers\UserController::loginViaHttpPost($di);
+            $di->get(\App\Controllers\UserController::class)->loginViaHttpPost();
         });
 
         $this->router->all('/logout',function() use ($di) {
-            \App\Controllers\UserController::logout($di);
+            $di->get(\App\Controllers\UserController::class)->logout($di);
         });
 
-        $this->router->get('/register',function() use ($di){
-            \App\Controllers\UserController::registerUser($di);
+        $this->router->get('/user/add',function() use ($di){
+            $di->get(\App\Controllers\UserController::class)->registerUser();
         });
 
-        $this->router->post('/register',function() use ($di){
-            \App\Controllers\UserController::registerAction($di);
+        $this->router->post('/user/add',function() use ($di){
+            $di->get(\App\Controllers\UserController::class)->registerAction();
         });
     }
 

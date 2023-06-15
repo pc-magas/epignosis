@@ -23,7 +23,9 @@ class Generic
     public static function csrf(Container $session)
     {
         if(empty($session->csrf)){
-            $token = substr(base64_encode(random_bytes(100)),0,20);
+            $token = base64_encode(random_bytes(100));
+            $token = str_replace('=','',$token);
+            $token = substr($token,0,50);
             $session->csrf = $token;
             
         } else {

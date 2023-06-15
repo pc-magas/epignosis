@@ -1,6 +1,7 @@
 <?php
 
 use App\Application;
+use App\Controllers\HomepageController;
 use Psr\Container\ContainerInterface;
 
 return [
@@ -55,5 +56,13 @@ return [
         $mail = $int->get('mail');
 
         return new \App\Services\UserService($db,$mail);
+    },
+
+    // ################### Controllers ######################### 
+    \App\Controllers\HomepageController::class => function(ContainerInterface $int){
+        return new \App\Controllers\HomepageController($int);   
+    },
+    \App\Controllers\UserController::class => function(ContainerInterface $int){
+        return new \App\Controllers\UserController($int);
     }
 ];
