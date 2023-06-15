@@ -173,7 +173,7 @@ class UserServiceTest extends DatabaseTestCase
         $mailer = $this->dummyMail();
 
         $service = new UserService($conn,$mailer);
-        $result = $service->modifyEmailAndName($user['user_id'],'tsak@example.com');
+        $result = $service->modifyEmailAndName($user['user_id'],'tsak@example.com','');
 
         $this->assertTrue($result);
 
