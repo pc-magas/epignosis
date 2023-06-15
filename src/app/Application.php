@@ -101,8 +101,15 @@ class Application
             \App\Controllers\UserController::logout($di);
         });
 
+        $this->router->get('/register',function() use ($di){
+            \App\Controllers\UserController::registerUser($di);
+        });
 
+        $this->router->post('/register',function() use ($di){
+            \App\Controllers\UserController::registerAction($di);
+        });
     }
+
 
     /**
      * Bootstrap and run the application

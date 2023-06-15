@@ -5,6 +5,9 @@ namespace App\Utils;
 use App\Application;
 use Laminas\Session\Container;
 
+/**
+ * Various Miscellanous Utilities
+ */
 class Generic
 {
     public static function getAppUrl($path)
@@ -19,8 +22,13 @@ class Generic
 
     public static function csrf(Container $session)
     {
-        $token = substr(base64_encode(random_bytes(100)),0,20);
-        $session->csrf = $token;
+        if(empty($session->csrf)){
+            $token = substr(base64_encode(random_bytes(100)),0,20);
+            $session->csrf = $token;
+            
+        } else {
+            $token = $session->csrf;
+        }
 
         return $token;
     }

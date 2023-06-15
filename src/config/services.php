@@ -23,9 +23,7 @@ return [
     },
     'twig' => function(ContainerInterface $int){
         $loader = new \Twig\Loader\FilesystemLoader(Application::VIEWS_DIR);
-        return new \Twig\Environment($loader, [
-            'cache' => Application::VIEW_CACHE_DIR,
-        ]);
+        return new \Twig\Environment($loader);
     },
     'mail' => function(ContainerInterface $int){
 

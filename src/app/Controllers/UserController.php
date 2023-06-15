@@ -83,4 +83,46 @@ class UserController
 
         header('Location: '.Generic::getAppUrl('/login'));
     }
+
+    public static function registerUser($di)
+    {
+        $session = $di->get('session');
+
+        if(empty($session->user)){
+            http_response_code(403);
+            echo json_encode(['msg'=>'User is Not Logged In']);
+        }
+
+        if(empty($session->user['role'] != 'Manager')){
+            http_response_code(403);
+            echo json_encode(['msg'=>'User is Not Authorized To perform this Action']);
+        }
+
+        $csrfToken = Generic::csrf($session);
+
+        $twig = $di->get('twig');
+        echo $twig->render('modify_user.html.twig',[
+            'csrf'=>$csrfToken,
+            'title'=>'User Registration',
+            'action'=>Generic::getAppUrl('/register')
+        ]);
+    }
+
+    public static function registerAction($di)
+    {
+        $session = $di->get('session');
+
+        if(empty($session->user)){
+            http_response_code(403);
+            echo json_encode(['msg'=>'User is Not Logged In']);
+        }
+
+        if(empty($session->user['role'] != 'Manager')){
+            http_response_code(403);
+            echo json_encode(['msg'=>'User is Not Authorized To perform this Action']);
+        }
+
+
+
+    }
 }
