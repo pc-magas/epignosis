@@ -340,7 +340,7 @@ class UserService
         $sql = sprintf($sql,$updateSql);
 
         if(count($updateColSql) == 0){
-            throw new \InvalidArgumentException('Email is not a valid one',self::INVALID_PARAMS_ALL);
+            throw new \InvalidArgumentException('No Arguments Provided',self::INVALID_PARAMS_ALL);
         }
 
         $this->dbConnection->beginTransaction();

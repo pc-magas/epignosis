@@ -232,4 +232,42 @@ class UserServiceTest extends DatabaseTestCase
         $this->assertEquals('tsak@example.com',$dataToCheck['email']);
         $this->assertEquals('Namae User',$dataToCheck['fullname']);
     }
+
+    public function testUserModifyInvalidEmailOnly()
+    {
+        $user = $this->createTestUser();
+        
+        $conn = $this->dBConnection();
+        $mailer = $this->dummyMail();
+
+        $service = new UserService($conn,$mailer);
+        $this->expectException(\InvalidArgumentException::class);
+        $result = $service->modifyEmailAndName($user['user_id'],'adsdsadasdasasd','');
+    }
+
+    public function testUserModifyNoParams()
+    {
+        $user = $this->createTestUser();
+        
+        $conn = $this->dBConnection();
+        $mailer = $this->dummyMail();
+
+        $service = new UserService($conn,$mailer);
+
+        $this->expectException(\InvalidArgumentException::class);
+        $result = $service->modifyEmailAndName($user['user_id'],'','');
+
+        $this->assertFalse($result);
+
+        $sql = "SELECT * from users where user_id = ? LIMIT 1";
+
+        $stmt=$conn->prepare($sql);
+        $stmt->execute([$user['user_id']]);
+        $dataToCheck = $stmt->fetch(\PDO::FETCH_ASSOC);
+
+        $this->assertEquals($user['user_id'],$dataToCheck['user_id']);
+        $this->assertEquals($user['user_email'],$dataToCheck['email']);
+        $this->assertEquals($user['fullname'],$dataToCheck['fullname']);
+    }
+    
 }
