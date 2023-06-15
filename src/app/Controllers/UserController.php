@@ -112,17 +112,50 @@ class UserController extends \App\Controllers\BaseController
     public function registerAction()
     {
         $di = $this->getServiceContainer();
-        $session = $di->get('session');
 
-        if(!$this->logedinAsManager()){
-            http_response_code(403);
-            echo json_encode(['msg'=>'User is Not Authorized To perform this Action']);
+        if(!$this->logedinAsManager() || !$this->validateCSRF($_POST['csrf']) ){
+            $this->jsonResponse(['msg'=>'User is Not Authorized To perform this Action'],403);
+            return;
         }
 
-        if($this->validateCSRF($_POST['csrf'])){
-            http_response_code(403);
-            echo json_encode(['msg'=>'User is Not Authorized To perform this Action']);
-        }
+        $userService = $di->get(UserService::class);
+        try {
+            
+            if($userService->registerUser($_POST['email'],$_POST['password'],$_POST['fullname'],$_POST['role'])){
+                $this->jsonResponse(['msg'=>'User sucessfully has registered'],200);
+            } else {
+                $this->jsonResponse(['msg'=>'Registration failed'],500);
+            }
+        } catch(\InvalidArgumentException $e) {
+            http_response_code(400);
+            $field = '';
+            $type = 'empty';
 
+            switch($e->getCode()){
+                case UserService::INVALID_ROLE_ERROR:
+                    $field = 'role';
+                    $type = 'invalid';
+                    break;
+                case UserService::INVALID_EMAIL_ERROR:
+                    $field = 'email';
+                    $type = 'invalid';
+                    break;
+                case UserService::EMPTY_PASSWORD_ERROR:
+                    $fiels = 'password';
+                    $type = 'empty';
+                    break;
+            }
+
+            echo json_encode(['field'=>$field,'type'=>$type]);
+            return;
+        } catch(\App\Exceptions\UserAlreadyExistsException $e){
+            http_response_code(409);
+            echo json_response(['email'=>$_POST['email']]);
+            return ;
+        } catch(\Exception $e) {
+            http_response_code(500);
+            echo json_response(['email'=>$_POST['email']]);
+            return;
+        }
     }
 }

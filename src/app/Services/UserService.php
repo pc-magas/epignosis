@@ -22,6 +22,12 @@ use Symfony\Component\Mime\Exception\InvalidArgumentException;
  */
 class UserService
 {
+
+    const EMPTY_EMAIL_ERROR = 1;
+    const INVALID_EMAIL_ERROR = 2;
+    const EMPTY_PASSWORD_ERROR = 3;
+    const INVALID_ROLE_ERROR = 4;
+
     /**
      * Database Handler
      *
@@ -106,7 +112,7 @@ class UserService
         $userRole = trim($userRole);
 
         if(!in_array($userRole,['MANAGER','EMPLOYEE'])){
-            throw new \InvalidArgumentException("ROLE $userRole is an invalid one");
+            throw new \InvalidArgumentException("ROLE $userRole is an invalid one",self::INVALID_ROLE_ERROR);
         }
 
         $email = trim($email);
@@ -114,11 +120,11 @@ class UserService
         $password = trim($password);
 
         if(!Generic::validateEmail($email)){
-            throw new \InvalidArgumentException('Email is not a valid one');
+            throw new \InvalidArgumentException('Email is not a valid one',self::INVALID_EMAIL_ERROR);
         }
 
         if(empty($password)){
-            throw new \InvalidArgumentException('Password is empty');
+            throw new \InvalidArgumentException('Password is empty',self::EMPTY_PASSWORD_ERROR);
         }
 
         $password = password_hash($password,PASSWORD_DEFAULT);

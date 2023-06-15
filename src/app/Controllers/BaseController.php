@@ -75,4 +75,11 @@ class BaseController
         $session = $this->getServiceContainer()->get('session');
         return empty($session->user) || (!empty($session->user['role']) && $session->user['role'] != 'MANAGER');
     }
+
+    public function jsonResponse(mixed $value,int $statusCode = 200)
+    {
+        http_response_code($statusCode);
+        header('Content-Type: appication/json');
+        echo json_encode($value);
+    }
 }
