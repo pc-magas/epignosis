@@ -204,10 +204,39 @@ class UserController extends \App\Controllers\BaseController
                 return;
             }
 
-            $this->jsonResponse(['msg'=>'User sucessfylly has been updated'],200);
+            $this->jsonResponse(['msg'=>'User sucessfully has been updated'],200);
             return;
         }catch(\InvalidArgumentException $e) {
             $this->handleInvalidArgumentException($e);
+            return;
+        }
+    }
+
+    public function updatePassword($user_id)
+    {
+        $di = $this->getServiceContainer();
+        
+        if(!$this->logedinAsManager() && !$this->logedinAsUser($user_id) && !$this->validateCSRF($_POST['csrf'])){
+            $this->jsonResponse(['msg'=>'User is Not Authorized To perform this Action'],403);
+            return;
+        }
+
+        /**
+         * @var UserService
+         */
+        $userService = $di->get(UserService::class);
+
+        try {
+            
+            if(!$userService->updatePassword($user_id,$_POST['password'])){
+                $this->jsonResponse(['msg'=>'User\'s password cannot be updated'],500);
+                return;
+            }
+
+            $this->jsonResponse(['msg'=>'User\'s password sucessfylly has been updated'],200);
+            return;
+        }catch(\InvalidArgumentException $e) {
+            var_dump($e->getMessage());
             return;
         }
     }
@@ -228,7 +257,9 @@ class UserController extends \App\Controllers\BaseController
 
         $results = $service->listUsers($page,$limit);
         $statusCode = empty($results)?404:200;
-        
+
         $this->jsonResponse($results,$statusCode);
     }
+
+    
 }

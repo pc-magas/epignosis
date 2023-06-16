@@ -363,14 +363,14 @@ class UserService
      * Update User's password
      * 
      * @param integer $user_id User's user_id
-     * @param string $pass User's password
+     * @param string $password User's password
      * 
      * @return bool
      * 
      * @throws InvalidArgumentException
      * 
      */
-    public function updatePassword(int $user_id, string $pass):bool
+    public function updatePassword(int $user_id, string $password):bool
     {
         if(!$this->userExists($user_id)){
             return false;

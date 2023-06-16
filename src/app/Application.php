@@ -121,6 +121,10 @@ class Application
             $di->get(\App\Controllers\UserController::class)->deleteUser($user_id);
         });
 
+        $this->router->post('/user/password/{user_id}',function($user_id) use ($di){
+            $di->get(\App\Controllers\UserController::class)->updatePassword($user_id);
+        });
+
         $this->router->post('/user/update/{user_id}',function($user_id) use ($di){
             $di->get(\App\Controllers\UserController::class)->updateUser($user_id);
         });
