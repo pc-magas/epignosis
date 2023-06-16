@@ -130,7 +130,7 @@ class DatabaseTestCase extends \Tests\TestBase {
 
         $now = \Carbon\Carbon::now();
 
-        $sql = "INSERT INTO vaccations(user_id,`from`,until) VALUES (?,?,?);";
+        $sql = "INSERT INTO vaccations(user_id,`from`,until) VALUES (?,?,?) RETURNING * ;";
 
         $numberOfRecords = ($numberOfRecords<=0)?1:$numberOfRecords;
 
@@ -138,6 +138,7 @@ class DatabaseTestCase extends \Tests\TestBase {
         $stmt=$db->prepare($sql);
         while($numberOfRecords>0){
             $stmt->execute([$user_id,$now->format('Y-m-d'),$now->format('Y-m-d')]);
+            $vaccations[]=$stmt->fetch(\PDO::FETCH_ASSOC);
             $now->modify("+30 days");
             $numberOfRecords--;
         }

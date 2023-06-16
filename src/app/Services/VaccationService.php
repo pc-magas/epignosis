@@ -44,7 +44,7 @@ class VaccationService
         }
 
         if($until->lessThan($from)){
-            throw new \ InvalidArgumentException("Invalid Range from SDatetime muse be LESS or equal to than until");
+            throw new \InvalidArgumentException("Invalid Range from SDatetime muse be LESS or equal to than until");
         }
 
         $sql = "INSERT INTO vaccations(user_id,`from`,until) VALUES (:user_id,:from,:until);";
@@ -77,7 +77,7 @@ class VaccationService
             return [];
         }
 
-        $sql = "SELECT * from vaccation where vaccation_id = :vaccation_id";
+        $sql = "SELECT * from vaccations where vaccation_id = :vaccation_id";
         
         $stmt = $this->dbConnection->prepare($sql);
         $stmt->execute([
@@ -148,7 +148,7 @@ class VaccationService
     {
         $vaccation = $this->findVaccation($vaccation_id);
 
-        if(empty($vaccation['$vaccation_id'])){
+        if(empty($vaccation['vaccation_id'])){
             return false;
         }
 
@@ -164,19 +164,20 @@ class VaccationService
             return false;
         }
 
-        $sql = "DELETE from vaccations where vaccation_id = :vaccation_id and status='PENDING'";
+        $sql = "DELETE from vaccations where vaccation_id = :vaccation_id and aproval_status='PENDING'";
 
         $this->dbConnection->beginTransaction();
         try {
             
             $stmt = $this->dbConnection->prepare($sql);
-            $stmt->prepare(['vaccation_id'=>$vaccation_id]);
+            $stmt->execute(['vaccation_id'=>$vaccation_id]);
             $stmt->execute();
 
             $this->dbConnection->commit();
             
             return true;
         }catch(\PDOException $e){
+            dump($e->getMessage());
             $this->dbConnection->rollback();
             return false;
         }
@@ -201,11 +202,11 @@ class VaccationService
 
         $vaccation = $this->findVaccation($vaccation_id);
 
-        if($vaccation['status'] != 'PENDING'){
+        if($vaccation['aproval_status'] != 'PENDING'){
             return false;
         }
 
-        $sql = "UPDATE vaccations set aproval_status=:status where vaccation_id = :vaccation_id and status='PENDING'";
+        $sql = "UPDATE vaccations set aproval_status=:status where vaccation_id = :vaccation_id and aproval_status='PENDING'";
 
         $this->dbConnection->beginTransaction();
         try {
