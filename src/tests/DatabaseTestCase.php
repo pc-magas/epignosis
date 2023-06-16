@@ -113,11 +113,27 @@ class DatabaseTestCase extends \Tests\TestBase {
      * Populate test Vacccations
      *
      * @param integer $user_id
+     * @param integer $numberOfRecords If <= 0, 1 record will be returned 
      * @return array
      */
-    public function populateVaccationsToUser(int $user_id):array
+    public function populateVaccationsToUser(int $user_id, int $numberOfRecords = 1):array
     {
         $vaccations=[];
+
+        $now = \Carbon\Carbon::now();
+
+        $sql = "INSERT INTO vaccations(user_id,`from`,until) VALUES (?,?,?);";
+
+        $numberOfRecords = ($numberOfRecords<=0)?1:$numberOfRecords;
+
+        $db = $this->dBConnection();
+        $stmt=$db->prepare($sql);
+        while($numberOfRecords>0){
+            $stmt->execute([$user_id,$now->format('Y-m-d'),$now->format('Y-m-d')]);
+            $now->modify("+30 days");
+            $numberOfRecords--;
+        }
+
         return $vaccations;
     }
 

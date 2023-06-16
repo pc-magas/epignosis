@@ -145,13 +145,29 @@ class UserServiceTest extends DatabaseTestCase
     public function testUserDeleteExists()
     {
         $user = $this->createTestUser();
-        
+        $this->populateVaccationsToUser($user['user_id'],3);
+
+        $sql = "SELECT COUNT(*) from vaccations where user_id=?";
+
+        $stmt = $this->dBConnection()->prepare($sql);
+        $stmt->execute([$user['user_id']]);
+
+        $result = $stmt->fetch(\PDO::FETCH_COLUMN);
+
+        $this->assertEquals(3,(int)$result);
+
         $conn = $this->dBConnection();
         $mailer = $this->dummyMail();
 
         $service = new UserService($conn,$mailer);
         $this->assertTrue($service->deleteUser($user['user_id']));
 
+        $stmt = $this->dBConnection()->prepare($sql);
+        $stmt->execute([$user['user_id']]);
+
+        $result = $stmt->fetch(\PDO::FETCH_COLUMN);
+
+        $this->assertEquals(0,(int)$result);
     }
 
     public function testUserDeleteNonExists()
