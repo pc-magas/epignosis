@@ -47,6 +47,11 @@ class UserService
     const INVALID_PARAMS_ALL = 0;
 
     /**
+     * Error For invalid User Id
+     */
+    const INVALID_USER_ID = 5;
+
+    /**
      * Database Handler
      *
      * @var PDO
@@ -246,7 +251,7 @@ class UserService
      * @param integer $user_id
      * @return boolean
      */
-    private function userExists(int $user_id): bool
+    public function userExists(int $user_id): bool
     {
         if($user_id < 0 ){
             return false;

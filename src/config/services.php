@@ -57,6 +57,12 @@ return [
 
         return new \App\Services\UserService($db,$mail);
     },
+    \App\Services\VaccationService::class => function(ContainerInterface $int){
+        $db = $int->get('db');
+        $userService = $int->get(\App\Services\UserService::class);
+
+        return new \App\Services\VaccationService($db,$userService);
+    }
 
     // ################### Controllers ######################### 
     \App\Controllers\HomepageController::class => function(ContainerInterface $int){
