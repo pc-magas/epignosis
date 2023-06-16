@@ -317,7 +317,6 @@ class UserServiceTest extends DatabaseTestCase
 
         $service = new UserService($conn,$mailer);
 
-        $this->expectException(\InvalidArgumentException::class);
         $service->updatePassword($user['user_id'],'3456');
 
         $sql = "SELECT * from users where user_id = ? LIMIT 1";
@@ -327,6 +326,5 @@ class UserServiceTest extends DatabaseTestCase
         $dataToCheck = $stmt->fetch(\PDO::FETCH_ASSOC);
 
         $this->assertTrue(password_verify('3456',$dataToCheck['password']));
-
     }
 }

@@ -233,7 +233,6 @@ class UserService
             $stmt->execute(['user_id'=>$result['user_id']]);
             $this->dbConnection->commit();
         }catch(\PDOException $e){
-            var_dump($e->getMessage());
             $this->dbConnection->rollBack();
             return false;
         }
@@ -389,7 +388,7 @@ class UserService
         try {
             
             $stmt = $this->dbConnection->prepare($sql);
-            $stmt->execute(['user_id'=>$user_id,'pass'=>$password]);
+            $stmt->execute(['user_id'=>$user_id,'password'=>$password]);
 
             $this->dbConnection->commit();
         }catch(\PDOException $e) {
