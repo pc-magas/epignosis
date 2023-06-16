@@ -124,6 +124,10 @@ class Application
         $this->router->post('/user/update/{user_id}',function($user_id) use ($di){
             $di->get(\App\Controllers\UserController::class)->updateUser($user_id);
         });
+
+        $this->router->get('/users',function() use ($di){
+            $di->get(\App\Controllers\UserController::class)->listUsers();
+        });
     }
 
 

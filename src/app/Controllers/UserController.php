@@ -117,7 +117,6 @@ class UserController extends \App\Controllers\BaseController
     public function registerUser()
     {
         $di = $this->getServiceContainer();
-        $session = $di->get('session');
 
         if(!$this->logedinAsManager()){
             http_response_code(403);
@@ -211,5 +210,25 @@ class UserController extends \App\Controllers\BaseController
             $this->handleInvalidArgumentException($e);
             return;
         }
+    }
+
+    public function listUsers()
+    {
+        $di = $this->getServiceContainer();
+        
+        if(!$this->logedinAsManager()){
+            $this->jsonResponse(['msg'=>'User is Not Authorized To perform this Action'],403);
+            return;
+        }
+
+        $page = empty($_GET['page'])?1:(int)$_GET['page'];
+        $limit = empty($_GET['limit'])?10:(int)$_GET['limit'];
+
+        $service = $di->get(UserService::class);
+
+        $results = $service->listUsers($page,$limit);
+        $statusCode = empty($results)?404:200;
+        
+        $this->jsonResponse($results,$statusCode);
     }
 }

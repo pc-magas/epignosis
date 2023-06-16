@@ -2,8 +2,6 @@
 
 namespace App\Services;
 
-use App\Application;
-use App\Exceptions\LinkHasExpiredException;
 use App\Exceptions\UserAlreadyExistsException;
 use App\Exceptions\UserNotFoundException;
 
@@ -402,6 +400,49 @@ class UserService
 
         return true;
     }
+
+    /**
+     * Get User List
+     *
+     * @param integer $page
+     * @param integer $limit
+     * @return array
+     * 
+     * @throws \InvalidArgumentException
+     * @throws \PDOException
+     */
+    public function listUsers(int $page, int $limit=10):array
+    {
+        $limit = $limit<=0?10:$limit;
+
+        $count = $this->dbConnection->query("SELECT count(*) from users",PDO::FETCH_COLUMN,0)->fetch();
+
+        $pages = Generic::calculateNumberOfPages($limit,$count);
+
+        if($page > $pages){
+            return [];
+        }
+
+        $offset = Generic::calculateOffset($page,$limit);
+
+        $sql = "
+            SELECT 
+                user_id,email,fullname 
+            from 
+                users
+            order by fullname ASC
+            LIMIT :offset , :limit
+        ";
+
+        $stmt = $this->dbConnection->prepare($sql);
+        
+        $stmt->bindParam('offset',$offset,PDO::PARAM_INT);
+        $stmt->bindParam('limit',$limit,PDO::PARAM_INT);
+        $stmt->execute();
+
+        return $stmt->fetchAll(PDO::FETCH_ASSOC);
+    }
+
 
     
 }
