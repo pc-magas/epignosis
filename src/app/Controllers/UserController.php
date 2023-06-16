@@ -188,7 +188,7 @@ class UserController extends \App\Controllers\BaseController
     {
         $di = $this->getServiceContainer();
         
-        if(!$this->logedinAsManager() || !$this->logedinAsUser($user_id) || !$this->validateCSRF($_POST['csrf'])){
+        if(!$this->logedinAsManager() && !$this->logedinAsUser($user_id) && !$this->validateCSRF($_POST['csrf'])){
             $this->jsonResponse(['msg'=>'User is Not Authorized To perform this Action'],403);
             return;
         }
