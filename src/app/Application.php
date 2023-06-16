@@ -120,6 +120,10 @@ class Application
         $this->router->post('/user/delete/{user_id}',function($user_id) use ($di){
             $di->get(\App\Controllers\UserController::class)->deleteUser($user_id);
         });
+
+        $this->router->post('/user/update/{user_id}',function($user_id) use ($di){
+            $di->get(\App\Controllers\UserController::class)->updateUser($user_id);
+        });
     }
 
 

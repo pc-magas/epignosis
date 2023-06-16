@@ -76,6 +76,12 @@ class BaseController
         return !empty($session->user) && !empty($session->user['role']) && $session->user['role'] == 'MANAGER';
     }
 
+    public function logedinAsUser(int $user_id):bool
+    {
+        $session = $this->getServiceContainer()->get('session');
+        return !empty($session->user) && !empty($session->user['user_id']) && (int)$session->user['user_id'] == $user_id;
+    }
+
     /**
      * Retuern Json Response
      *

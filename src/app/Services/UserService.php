@@ -305,6 +305,8 @@ class UserService
      * @param string $email User's name
      * @param string $fullname 
      * @return bool
+     * 
+     * @throws \InvalidArgumentException
      */
     public function modifyEmailAndName(int $user_id,?string $email=null, ?string $fullname=null): bool
     {

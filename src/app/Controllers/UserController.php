@@ -2,14 +2,37 @@
 
 namespace App\Controllers;
 
-use App\Exceptions\LinkHasExpired;
-use App\Exceptions\LinkHasExpiredException;
 use App\Services\UserService;
 use App\Utils\Generic;
 
 class UserController extends \App\Controllers\BaseController
 {
 
+    private function handleInvalidArgumentException(\InvalidArgumentException $e):void
+    {   
+
+        $field = '';
+        $type = 'empty';
+
+        switch($e->getCode()){
+            case UserService::INVALID_ROLE_ERROR:
+                $field = 'role';
+                $type = 'invalid';
+                break;
+            case UserService::INVALID_EMAIL_ERROR:
+                $field = 'email';
+                $type = 'invalid';
+                break;
+            case UserService::EMPTY_PASSWORD_ERROR:
+                $fiels = 'password';
+                $type = 'empty';
+                break;
+        }
+
+        $this->jsonResponse(['field'=>$field,'type'=>$type],400);
+
+    }
+    
     public function login()
     {
         $di=$this->getServiceContainer();
@@ -129,26 +152,7 @@ class UserController extends \App\Controllers\BaseController
                 $this->jsonResponse(['msg'=>'Registration failed'],500);
             }
         } catch(\InvalidArgumentException $e) {
-
-            $field = '';
-            $type = 'empty';
-
-            switch($e->getCode()){
-                case UserService::INVALID_ROLE_ERROR:
-                    $field = 'role';
-                    $type = 'invalid';
-                    break;
-                case UserService::INVALID_EMAIL_ERROR:
-                    $field = 'email';
-                    $type = 'invalid';
-                    break;
-                case UserService::EMPTY_PASSWORD_ERROR:
-                    $fiels = 'password';
-                    $type = 'empty';
-                    break;
-            }
-
-            $this->jsonResponse(['field'=>$field,'type'=>$type],400);
+            $this->handleInvalidArgumentException($e);
             return;
         } catch(\App\Exceptions\UserAlreadyExistsException $e){
             $this->jsonResponse(['email'=>$_POST['email']],409);
@@ -178,5 +182,34 @@ class UserController extends \App\Controllers\BaseController
         }
 
         $this->jsonResponse(['msg'=>'Delete Success'],500);
+    }
+
+    public function updateUser($user_id)
+    {
+        $di = $this->getServiceContainer();
+        
+        if(!$this->logedinAsManager() || !$this->logedinAsUser($user_id) || !$this->validateCSRF($_POST['csrf'])){
+            $this->jsonResponse(['msg'=>'User is Not Authorized To perform this Action'],403);
+            return;
+        }
+
+        /**
+         * @var UserService
+         */
+        $userService = $di->get(UserService::class);
+
+        try {
+            
+            if(!$userService->modifyEmailAndName($user_id,$_POST['email'],$_POST['name'])){
+                $this->jsonResponse(['msg'=>'User cannot be updated'],500);
+                return;
+            }
+
+            $this->jsonResponse(['msg'=>'User sucessfylly has been updated'],200);
+            return;
+        }catch(\InvalidArgumentException $e) {
+            $this->handleInvalidArgumentException($e);
+            return;
+        }
     }
 }
