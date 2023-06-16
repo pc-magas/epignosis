@@ -16,8 +16,11 @@ class DatabaseTestCase extends \Tests\TestBase {
 
     private $migrationManager;
     
-    public function setUp (): void
+
+    public function setUp(): void
     {
+        parent::setUp();
+
         error_reporting(E_ALL);
 
         // For rubistness we place the configuration here
@@ -46,20 +49,25 @@ class DatabaseTestCase extends \Tests\TestBase {
         // Configs are same
         $pdo = Application::createDB($migration_config['environments']['testing']);
         
+        if(!empty($this->pdo)){
+            $this->pdo = $pdo;
+        }
+
         $config = new Config($migration_config);
         $manager = new Manager($config, new StringInput(' '), new NullOutput());
-        $manager->migrate('testing');
+        $this->migrationManager = $manager;
+
+        $this->migrationManager->migrate('testing');
 
         // You can change default fetch mode after the seeding
         $this->pdo = $pdo;
-
-        $this->migrationManager = $manager;
     }
 
     public function tearDown():void
     {
         parent::tearDown();
-        $this->migrationManager->rollback('testing');
+        $this->migrationManager->rollback('testing','all');
+
     }
 
 

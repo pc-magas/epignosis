@@ -58,7 +58,6 @@ class UserServiceTest extends DatabaseTestCase
          */
         $conn = $this->dBConnection();
 
-
         $service = new UserService($conn,$mailer);
 
         Carbon::setTestNow(new Carbon('2023-06-12 00:00:00'));

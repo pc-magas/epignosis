@@ -12,6 +12,7 @@ final class DateContraint extends AbstractMigration
 
     public function down(): void
     {
+        dump(__CLASS__."::".__FUNCTION__);
         $this->execute('ALTER TABLE vaccations drop constraint date_range_valid');
     }
 }

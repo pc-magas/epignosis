@@ -16,8 +16,13 @@ final class VaccationsDateIndex extends AbstractMigration
      * Remember to call "create()" or "update()" and NOT "save()" when working
      * with the Table class.
      */
-    public function change(): void
+    public function up(): void
     {
         $this->execute('CREATE INDEX IF NOT EXISTS vaccation_range_index ON vaccations(`from`,until);');
+    }
+
+    public function down(): void
+    {
+        $this->execute('DROP INDEX IF EXISTS vaccation_range_index ON vaccations;');
     }
 }
