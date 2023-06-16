@@ -117,7 +117,8 @@ class DatabaseTestCase extends \Tests\TestBase {
      */
     public function populateVaccationsToUser(int $user_id):array
     {
-        
+        $vaccations=[];
+        return $vaccations;
     }
 
    
