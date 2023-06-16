@@ -171,7 +171,6 @@ class VaccationService
             
             $stmt = $this->dbConnection->prepare($sql);
             $stmt->execute(['vaccation_id'=>$vaccation_id]);
-            $stmt->execute();
 
             $this->dbConnection->commit();
             

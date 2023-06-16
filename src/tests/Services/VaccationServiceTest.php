@@ -78,4 +78,59 @@ class VaccationServiceTest extends DatabaseTestCase
 
         $this->assertFalse($vaccationService->delete($vaccations['vaccation_id'],$manager['user_id']));
     }
+
+    public function testApprovedStatus()
+    {
+        $user = $this->createTestUser(true,false);
+
+
+        $vaccations = $this->populateVaccationsToUser($user['user_id'],1);
+        $vaccations=$vaccations[0];
+
+        $dbService = $this->dBConnection();
+        $user_service = new UserService($dbService,$this->dummyMail());
+        
+        $vaccationService = new VaccationService($dbService,$user_service);
+
+        $this->assertTrue($vaccationService->changeVaccationStatus($vaccations['vaccation_id'],'APPROVED'));
+
+        $sql = 'SELECT * FROM vaccations where vaccation_id = :vaccation_id';
+
+        $stmt = $dbService->prepare($sql);
+        $stmt->execute(['vaccation_id'=>$vaccations['vaccation_id']]);
+
+        $result = $stmt->fetch(\PDO::FETCH_ASSOC);
+
+
+        $this->assertEquals($result['aproval_status'],'APPROVED');
+    }
+
+
+    public function testRejectedStatus()
+    {
+        $user = $this->createTestUser(true,false);
+
+
+        $vaccations = $this->populateVaccationsToUser($user['user_id'],1);
+        $vaccations=$vaccations[0];
+
+        $dbService = $this->dBConnection();
+        $user_service = new UserService($dbService,$this->dummyMail());
+        
+        $vaccationService = new VaccationService($dbService,$user_service);
+
+        $this->assertTrue($vaccationService->changeVaccationStatus($vaccations['vaccation_id'],'REJECTED'));
+
+        $sql = 'SELECT * FROM vaccations where vaccation_id = :vaccation_id';
+
+        $stmt = $dbService->prepare($sql);
+        $stmt->execute(['vaccation_id'=>$vaccations['vaccation_id']]);
+
+        $result = $stmt->fetch(\PDO::FETCH_ASSOC);
+
+
+        $this->assertEquals($result['aproval_status'],'REJECTED');
+    }
+
+
 }
