@@ -17,7 +17,7 @@ class UserController extends \App\Controllers\BaseController
 
         echo $twig->render('login.html.twig',[
             'url'=>'/login',
-            'csrf_token' => Generic::csrf($di->get('session'))
+            'csrf_token' => $this->getCsrfToken()
         ]);
     }
 
@@ -25,12 +25,13 @@ class UserController extends \App\Controllers\BaseController
     {
         $di=$this->getServiceContainer();
         $session = $di->get('session');
-        $twig = $di->get('twig');
-
+        $twig = $di->get('twig');       
+    
         if(!empty($session->user)){
             header('Location: '.Generic::getAppUrl(''));
+            return;
         }
-    
+
         if($this->validateCSRF($_POST['csrf_token'])){
             http_response_code(403);
             echo $twig->render('login.html.twig',[
@@ -38,6 +39,7 @@ class UserController extends \App\Controllers\BaseController
                 'csrf_token' => $this->getCsrfToken(),
                 'error'=> 'Internal Error'
             ]);
+            return;
         }
 
         /**
@@ -47,18 +49,18 @@ class UserController extends \App\Controllers\BaseController
 
         try {
           $userInfo =  $userService->login($_POST['email'],$_POST['pass']);
-         
+            
           $session->user = $userInfo;
           header('Location: '.Generic::getAppUrl(''));
           return;
         }catch(\Exception $e){
-
             http_response_code(403);
             echo $twig->render('login.html.twig',[
                 'url'=>'/login',
                 'csrf_token' => $this->getCsrfToken(),
                 'error'=> $e->getMessage()
             ]);
+            return;
         }
     }
 
@@ -157,5 +159,24 @@ class UserController extends \App\Controllers\BaseController
         }
     }
 
-    
+    public function deleteUser($user_id)
+    {
+        $di = $this->getServiceContainer();
+
+        if(!$this->logedinAsManager() || !$this->validateCSRF($_POST['csrf']) ){
+            $this->jsonResponse(['msg'=>'User is Not Authorized To perform this Action'],403);
+            return;
+        }
+
+        /**
+         * @var UserService
+         */
+        $userService = $di->get(UserService::class);
+        if(!$userService->deleteUser($user_id)){
+            $this->jsonResponse(['msg'=>'User cannot be deleted'],500);
+            return;
+        }
+
+        $this->jsonResponse(['msg'=>'Delete Success'],500);
+    }
 }
