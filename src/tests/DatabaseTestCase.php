@@ -98,7 +98,7 @@ class DatabaseTestCase extends \Tests\TestBase {
 
         $sql = "INSERT INTO users (email,fullname,password,role,active,activation_token) VALUES (:email,:fullname,:pass,:role,:active,:token);";
 
-        $prefix=time();
+        $prefix=microtime();
         $data = [
             'email'=>$prefix.'@example.com',
             'fullname'=>'TEST '.$prefix,
