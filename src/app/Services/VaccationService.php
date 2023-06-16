@@ -114,6 +114,7 @@ class VaccationService
             return [];
         }
 
+        $offset = Generic::calculateOffset($page,$limit);
 
         $sql = "
             SELECT 
