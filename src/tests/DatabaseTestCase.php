@@ -109,5 +109,16 @@ class DatabaseTestCase extends \Tests\TestBase {
         return $data;
     }
 
+    /**
+     * Populate test Vacccations
+     *
+     * @param integer $user_id
+     * @return array
+     */
+    public function populateVaccationsToUser(int $user_id):array
+    {
+        
+    }
+
    
 }

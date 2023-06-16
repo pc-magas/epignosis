@@ -24,6 +24,7 @@ final class Vacations extends AbstractMigration
             ->addColumn('from','date',['null'=>false])
             ->addColumn('until','date',['null'=>false])
             ->addColumn('approve','boolean',['null'=>false,'default'=>false])
+            ->addColumn('comments','text',['null'=>true])
             ->addColumn('request_timestamp', 'timestamp', ['default' => 'CURRENT_TIMESTAMP'])
             ->addForeignKey('user_id', 'users', 'user_id', ['delete'=> 'CASCADE', 'update'=> 'NO_ACTION'])
             ->save();
