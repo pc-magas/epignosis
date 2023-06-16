@@ -44,7 +44,7 @@ class VaccationService
         }
 
         if($until->lessThan($from)){
-            throw new \InvalidArgumentException("Invalid Range from SDatetime muse be LESS or equal to than until");
+            throw new \InvalidArgumentException("Invalid Range from Datetime must be LESS or equal to than until");
         }
 
         $sql = "INSERT INTO vaccations(user_id,`from`,until) VALUES (:user_id,:from,:until);";

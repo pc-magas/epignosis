@@ -18,11 +18,11 @@ final class VaccationsDateIndex extends AbstractMigration
      */
     public function up(): void
     {
-        $this->execute('CREATE INDEX IF NOT EXISTS vaccation_range_index ON vaccations(`from`,until);');
+        $this->execute('CREATE UNIQUE INDEX IF NOT EXISTS no_duplicate_vaccations ON vaccations(`user_id`,from,aproval_status);');
     }
 
     public function down(): void
     {
-        $this->execute('DROP INDEX IF EXISTS vaccation_range_index ON vaccations;');
+        $this->execute('DROP INDEX IF EXISTS no_duplicate_vaccations ON vaccations;');
     }
 }
