@@ -125,6 +125,14 @@ class DatabaseTestCase extends \Tests\TestBase {
      */
     public function populateVaccationsToUser(int $user_id, int $numberOfRecords = 1):array
     {
+        $dbService = $this->dBConnection();
+
+        // Ensure no garbage left
+        // Just Foolproofing the test
+        $sql = 'DELETE FROM vaccations where user_id=:user_id';
+        $stmt = $dbService->prepare($sql);
+        $stmt->execute(['user_id'=>$user_id]);
+
         $vaccations=[];
 
         $now = \Carbon\Carbon::now();

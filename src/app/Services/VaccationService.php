@@ -54,7 +54,7 @@ class VaccationService
             throw new \InvalidArgumentException("Range Must Be on the future");
         }
 
-        $sql = "INSERT INTO vaccations(user_id,`from`,until) VALUES (:user_id,:from,:until);";
+        $sql = "INSERT INTO vaccations(user_id,`from`,until,comment) VALUES (:user_id,:from,:until,:comment);";
 
         try {
 
@@ -62,7 +62,8 @@ class VaccationService
             $stmt->execute([
                 'user_id'=>$user_id,
                 'from'=>$from->format("Y-m-d"),
-                'until'=>$until->format("Y-m-d")
+                'until'=>$until->format("Y-m-d"),
+                'comment'=>strip_tags(trim($comment))
             ]);
             
             return true;

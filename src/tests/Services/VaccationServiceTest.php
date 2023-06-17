@@ -138,11 +138,6 @@ class VaccationServiceTest extends DatabaseTestCase
     {
         $user = $this->createTestUser(true,false);
 
-        $sql = 'DELETE FROM vaccations';
-        $dbService = $this->dBConnection();
-        $stmt = $dbService->prepare($sql);
-        $stmt->execute();
-
 
         $dbService = $this->dBConnection();
         $user_service = new UserService($dbService,$this->dummyMail());
@@ -166,5 +161,138 @@ class VaccationServiceTest extends DatabaseTestCase
 
         $this->assertEquals($dt->format('Y-m-d'),$results['from']);
         $this->assertEquals($dt->format('Y-m-d'),$results['until']);
+    }
+
+    public function testAddVaccationDuplicatePendingFails()
+    {
+        $user = $this->createTestUser(true,false);
+
+        $dbService = $this->dBConnection();
+
+        // Ensure no garbage left
+        // Just Foolproofing the test
+        $sql = 'DELETE FROM vaccations';
+        $stmt = $dbService->prepare($sql);
+        $stmt->execute();
+
+        $insertFrom = new Carbon();
+        $insertUntil_orig = (new Carbon())->modify('+3 days');
+
+        // I manually insert a vaccation in order to have controll to the insertion time
+        $sql = "INSERT INTO vaccations(user_id,`from`,until,aproval_status) VALUES (:user_id,:from,:until,'PENDING');";
+        $stmt = $dbService->prepare($sql);
+        $stmt->execute([
+            'user_id'=>$user['user_id'],
+            'from'=>$insertFrom->format('Y-m-d'),
+            'until'=>$insertUntil_orig->format('Y-m-d')
+        ]);
+
+        $insertUntil = $insertFrom->modify("+10 days");
+
+        $dbService = $this->dBConnection();
+        $user_service = new UserService($dbService,$this->dummyMail());
+        $vaccationService = new VaccationService($dbService,$user_service);
+
+        $status = $vaccationService->add($user['user_id'],$insertFrom,$insertUntil,"");
+
+        $this->assertFalse($status);
+
+        $sql = "SELECT * from vaccations where user_id=:user_id";
+        $stmt = $dbService->prepare($sql);
+        $stmt->execute([
+            'user_id'=>$user['user_id'],
+        ]);
+
+        $results = $stmt->fetchAll(\PDO::FETCH_ASSOC);
+        $this->assertCount(1,$results);
+    }
+
+   
+    public function testAddVaccationDuplicateApprovedFails()
+    {
+        $user = $this->createTestUser(true,false);
+
+        $dbService = $this->dBConnection();
+
+        // Ensure no garbage left
+        // Just Foolproofing the test
+        $sql = 'DELETE FROM vaccations';
+        $stmt = $dbService->prepare($sql);
+        $stmt->execute();
+
+        $insertFrom = new Carbon();
+        $insertUntil_orig = (new Carbon())->modify('+3 days');
+
+        // I manually insert a vaccation in order to have controll to the insertion time
+        $sql = "INSERT INTO vaccations(user_id,`from`,until,aproval_status) VALUES (:user_id,:from,:until,'APPROVED');";
+        $stmt = $dbService->prepare($sql);
+        $stmt->execute([
+            'user_id'=>$user['user_id'],
+            'from'=>$insertFrom->format('Y-m-d'),
+            'until'=>$insertUntil_orig->format('Y-m-d')
+        ]);
+
+        $insertUntil = $insertFrom->modify("+10 days");
+
+        $dbService = $this->dBConnection();
+        $user_service = new UserService($dbService,$this->dummyMail());
+        $vaccationService = new VaccationService($dbService,$user_service);
+
+        $status = $vaccationService->add($user['user_id'],$insertFrom,$insertUntil,"");
+
+        $this->assertFalse($status);
+
+        $sql = "SELECT * from vaccations where user_id=:user_id";
+        $stmt = $dbService->prepare($sql);
+        $stmt->execute([
+            'user_id'=>$user['user_id'],
+        ]);
+
+        $results = $stmt->fetchAll(\PDO::FETCH_ASSOC);
+        $this->assertCount(1,$results);
+    }
+
+    public function testAddVaccationDuplicateRejectedFails()
+    {
+        $user = $this->createTestUser(true,false);
+
+        $dbService = $this->dBConnection();
+
+        // Ensure no garbage left
+        // Just Foolproofing the test
+        $sql = 'DELETE FROM vaccations';
+        $stmt = $dbService->prepare($sql);
+        $stmt->execute();
+
+        $insertFrom = new Carbon();
+        $insertUntil_orig = (new Carbon())->modify('+3 days');
+
+        // I manually insert a vaccation in order to have controll to the insertion time
+        $sql = "INSERT INTO vaccations(user_id,`from`,until,aproval_status) VALUES (:user_id,:from,:until,'APPROVED');";
+        $stmt = $dbService->prepare($sql);
+        $stmt->execute([
+            'user_id'=>$user['user_id'],
+            'from'=>$insertFrom->format('Y-m-d'),
+            'until'=>$insertUntil_orig->format('Y-m-d')
+        ]);
+
+        $insertUntil = $insertFrom->modify("+10 days");
+
+        $dbService = $this->dBConnection();
+        $user_service = new UserService($dbService,$this->dummyMail());
+        $vaccationService = new VaccationService($dbService,$user_service);
+
+        $status = $vaccationService->add($user['user_id'],$insertFrom,$insertUntil,"");
+
+        $this->assertFalse($status);
+
+        $sql = "SELECT * from vaccations where user_id=:user_id";
+        $stmt = $dbService->prepare($sql);
+        $stmt->execute([
+            'user_id'=>$user['user_id'],
+        ]);
+
+        $results = $stmt->fetchAll(\PDO::FETCH_ASSOC);
+        $this->assertCount(1,$results);
     }
 }
