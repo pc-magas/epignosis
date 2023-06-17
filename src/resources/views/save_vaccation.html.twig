@@ -55,7 +55,7 @@
                 'method':method,
                 'data':$(form).serialize()+"&csrf="+getCSRFToken(),
                 success: function(){
-                    form.reset();
+                    window.location='/vaccations'
                 },
                 error: function(xhr, status) {
                     const statusCode = xhr.status;
