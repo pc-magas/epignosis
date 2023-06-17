@@ -107,6 +107,11 @@ class VaccationController extends BaseController
 
     }
 
+    public function listLoggedinUser()
+    {
+
+    }
+
     public function approveReject()
     {
         if(!$this->logedinAsManager()){

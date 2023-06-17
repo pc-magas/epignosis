@@ -104,15 +104,28 @@ class VaccationService
      * @param integer $limit
      * @return array
      */
-    public function list(int $user_id, int $page, int $limit):array
+    public function list(int $page, int $limit, ?int $user_id):array
     {
-
         $limit = $limit<=0?10:$limit;
 
-        $sql = "SELECT count(*) from vaccations where user_id = :user_id";
+        $whereUserid="";
+
+        $sql = "SELECT count(*) from vaccations";
         
+        $data=null;
+
+        if(!empty($user_id)){
+            if($user_id < 0){
+                throw new \InvalidArgumentException("${user_id} is not a valid user identifier");
+            }
+            $whereUserid = " where vaccations.user_id = :user_id";
+
+            $sql.= $whereUserid;
+            $data=['user_id'=>$user_id]; 
+        }
+
         $stmt = $this->dbConnection->prepare($sql);
-        $stmt->execute(['user_id'=>$user_id]);   
+        $stmt->execute($data);   
         
         $count = $stmt->fetch(\PDO::FETCH_COLUMN); 
 
@@ -126,20 +139,25 @@ class VaccationService
 
         $sql = "
             SELECT 
-                from,until,status,created
+                vaccation_id,`from`,until,aproval_status,vaccations.request_timestamp,users.fullname as user_name
             from 
-                created_timestamp
-            where
-                user_id=:user_id
-            order by created_timestamp ASC
+                vaccations
+                join users on vaccations.user_id = users.user_id
+            $whereUserid
+            order by vaccations.request_timestamp DESC
             LIMIT :offset , :limit
         ";
+
 
         $stmt = $this->dbConnection->prepare($sql);
         
         $stmt->bindParam('offset',$offset,\PDO::PARAM_INT);
         $stmt->bindParam('limit',$limit,\PDO::PARAM_INT);
-        $stmt->bindParam('user_id',$user_id,\PDO::PARAM_INT);
+        
+        if(!empty($user_id)){
+            $stmt->bindParam('user_id',$user_id,\PDO::PARAM_INT);
+        }
+
         $stmt->execute();
 
         return $stmt->fetchAll(\PDO::FETCH_ASSOC);

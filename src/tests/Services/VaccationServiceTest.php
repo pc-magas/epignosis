@@ -295,4 +295,85 @@ class VaccationServiceTest extends DatabaseTestCase
         $results = $stmt->fetchAll(\PDO::FETCH_ASSOC);
         $this->assertCount(1,$results);
     }
+
+    public function testListVaccationsUser()
+    {
+        $vaccationsAsAssodByVaccationId = function($final_array,$item){
+            $final_array[(int)$item['vaccation_id']]=$item;
+            return $final_array;
+        };
+
+        $user = $this->createTestUser(true,false);
+        $user2 = $this->createTestUser(true,false);
+
+        $returendVaccations = $this->populateVaccationsToUser($user['user_id'],20);
+        $returendVaccations = array_reduce($returendVaccations,$vaccationsAsAssodByVaccationId,[]);
+        
+        $vaccations2 = $this->populateVaccationsToUser($user2['user_id'],20);
+        $ignoredVaccations = array_reduce($vaccations2,$vaccationsAsAssodByVaccationId,[]);
+
+        $dbService = $this->dBConnection();
+        $user_service = new UserService($dbService,$this->dummyMail());
+        $vaccationService = new VaccationService($dbService,$user_service);
+
+        $listedVaccations = $vaccationService->list(1,10,$user['user_id']);
+        $this->assertCount(10,$listedVaccations);
+        $this->assertNotEquals(count($listedVaccations),count($returendVaccations));
+
+        foreach($listedVaccations as $vaccation){
+
+            $this->assertFalse(in_array($vaccation['vaccation_id'],array_keys($ignoredVaccations)));
+
+            $this->assertTrue(isset($returendVaccations[(int)$vaccation['vaccation_id']]));
+
+            $vaccationTocheck = $returendVaccations[$vaccation['vaccation_id']];
+
+            $this->assertEquals($user['fullname'],$vaccation['user_name']);
+            $this->assertNotEquals($user2['fullname'],$vaccation['user_name']);
+
+
+            $this->assertEquals($vaccationTocheck['from'],$vaccation['from']);
+            $this->assertEquals($vaccationTocheck['until'],$vaccation['until']);
+            $this->assertEquals($vaccationTocheck['aproval_status'],$vaccation['aproval_status']);
+        }
+    }
+
+    public function testListVaccationsWithoutUser()
+    {
+        $vaccationsAsAssodByVaccationId = function($final_array,$item){
+            $final_array[(int)$item['vaccation_id']]=$item;
+            return $final_array;
+        };
+
+        $user = $this->createTestUser(true,false);
+        $user2 = $this->createTestUser(true,false);
+
+        $returendVaccations = $this->populateVaccationsToUser($user['user_id'],10);       
+        $vaccations2 = $this->populateVaccationsToUser($user2['user_id'],20);
+        $returendVaccations3 = $this->populateVaccationsToUser($user['user_id'],10);
+
+        $returendVaccations = array_merge($returendVaccations,$vaccations2,$returendVaccations3);
+        $returendVaccations = array_reduce($returendVaccations,$vaccationsAsAssodByVaccationId,[]);
+
+        $dbService = $this->dBConnection();
+        $user_service = new UserService($dbService,$this->dummyMail());
+        $vaccationService = new VaccationService($dbService,$user_service);
+
+        $listedVaccations = $vaccationService->list(1,10,$user['user_id']);
+        $this->assertCount(10,$listedVaccations);
+        $this->assertNotEquals(count($listedVaccations),count($returendVaccations));
+
+        foreach($listedVaccations as $vaccation){
+
+            $this->assertTrue(isset($returendVaccations[(int)$vaccation['vaccation_id']]));
+
+            $vaccationTocheck = $returendVaccations[$vaccation['vaccation_id']];
+
+            $this->assertTrue(in_array($vaccation['user_name'],[$user['fullname'],$user2['fullname']]));
+
+            $this->assertEquals($vaccationTocheck['from'],$vaccation['from']);
+            $this->assertEquals($vaccationTocheck['until'],$vaccation['until']);
+            $this->assertEquals($vaccationTocheck['aproval_status'],$vaccation['aproval_status']);
+        }
+    }
 }
