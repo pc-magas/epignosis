@@ -1,6 +1,7 @@
 <?php
 
 namespace App\Controllers;
+use App\Utils\Generic;
 use App\Services\VaccationService;
 use Carbon\Carbon;
 
@@ -15,9 +16,10 @@ class VaccationController extends BaseController
         }
 
         $twig = $this->getServiceContainer()->get('twig');
-        return $twig->render('save_vaccation.html.twig',[
+        echo $twig->render('save_vaccation.html.twig',[
             'csrf'=>$this->getCsrfToken()
         ]);
+        return;
     }
 
     public function add()
@@ -46,7 +48,7 @@ class VaccationController extends BaseController
         $session = $di->get('session');
 
         try{
-            if(!$service->save((int)$session->user['user_id'], new Carbon($from), new Carbon($until),$comment])){
+            if(!$service->save((int)$session->user['user_id'], new Carbon($from), new Carbon($until),$comment)){
                 $this->jsonResponse(['msg'=>"Save failed"],500);
                 return;
             }

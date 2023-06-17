@@ -71,6 +71,7 @@ class BaseController
      */
     public function logedinAsRole(string $role):bool
     {
+
         $role = strtoupper(trim($role));
         if(!in_array($role,['MANAGER','EMPLOYEE'])){
             throw new \InvalidArgumentException("Invalid User Role");
@@ -87,7 +88,7 @@ class BaseController
      */
     public function logedinAsManager():bool
     {
-        return $this->loggedinAsRole('MANAGER');
+        return $this->logedinAsRole('MANAGER');
     }
 
     /**
@@ -97,7 +98,7 @@ class BaseController
      */
     public function logedinAsEmployee():bool
     {
-        return $this->loggedinAsRole('EMPLOYE');
+        return $this->logedinAsRole('EMPLOYEE');
     }
 
     public function logedinAsUser(int $user_id):bool

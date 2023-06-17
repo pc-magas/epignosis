@@ -55,7 +55,7 @@ class UserController extends \App\Controllers\BaseController
             return;
         }
 
-        if($this->validateCSRF($_POST['csrf_token'])){
+        if(!$this->validateCSRF($_POST['csrf_token'])){
             http_response_code(403);
             echo $twig->render('login.html.twig',[
                 'url'=>'/login',

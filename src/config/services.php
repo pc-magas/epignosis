@@ -62,7 +62,7 @@ return [
         $userService = $int->get(\App\Services\UserService::class);
 
         return new \App\Services\VaccationService($db,$userService);
-    }
+    },
 
     // ################### Controllers ######################### 
     \App\Controllers\HomepageController::class => function(ContainerInterface $int){
