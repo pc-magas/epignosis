@@ -22,11 +22,11 @@
                             {% if vaccation.aproval_status == 'PENDING' %}
                                 {% if  user_role == 'MANAGER' %}
                                     <div class="btn-group" role="group" aria-label="Basic example">
-                                        <button type="button" class="btn btn-success btn-sm" data-vaccation_id="{{vaccation.vaccation_id}}" onclick="approve(this)">APPROVE</button>
-                                        <button type="button" class="btn btn-danger btn-sm" data-vaccation_id="{{vaccation.vaccation_id}}" onclick="reject(this)">REJECT</button>
+                                        <button type="button" class="btn btn-success btn-sm" data-vaccation_id="{{vaccation.vaccation_id}}" onclick="approve({{vaccation.vaccation_id}})">APPROVE</button>
+                                        <button type="button" class="btn btn-danger btn-sm" data-vaccation_id="{{vaccation.vaccation_id}}" onclick="reject({{vaccation.vaccation_id}})">REJECT</button>
                                     </div>
                                 {% else %}
-                                    <button type="button" class="btn btn-danger btn-sm" data-vaccation_id="{{vaccation.vaccation_id}}" onclick="delete(this)">DELETE</button>
+                                    <button type="button" class="btn btn-danger btn-sm" data-vaccation_id="{{vaccation.vaccation_id}}" onclick="delete({{vaccation.vaccation_id}})">DELETE</button>
                                 {% endif %}
                             {% endif %}
                         </td>
@@ -34,4 +34,46 @@
             {% endfor %}
         </tbody>
     </table>
+{% endblock %}
+
+{% block js %}
+    {{ parent() }}
+
+    <script>
+
+
+        {% if  user_role == 'MANAGER' %}
+
+            function changeApprocalStatus(vaccation_id, status){
+                $.post('/vaccation/approval_status',{
+                    'token':getCSRFToken(),
+                    'vaccation_id':vaccation_id,
+                    'approval_status':status
+                },function(data){
+                    window.location.reload();
+                }).fail(function(xhr){
+                    alert("Internal Error");
+                });
+            }
+
+            function approve(vaccation_id){
+                if (window.confirm("Are you sure?")) {
+                    changeApprocalStatus(vaccation_id,'APPROVED');
+                }
+            }
+
+            function reject(vaccation_id){
+                if (window.confirm("Are you sure?")) {
+                    changeApprocalStatus(vaccation_id,'REJECTED');
+                }
+            }
+
+        {% else %}
+            function delete(vaccation_id){
+                if (window.confirm("Are you sure?")) {
+                    // Ajax Delete
+                }
+            }
+        {% endif %}
+    </script>
 {% endblock %}
