@@ -52,7 +52,7 @@
                     <td>
                         <div class="btn-group" role="group" aria-label="Basic example">
                             <button class="btn btn-success btn-sm">EDIT</button>
-                            <button class="btn btn-danger btn-sm">DELETE</button>
+                            <button class="btn btn-danger btn-sm" onclick="deleteUser({{user.user_id}})">DELETE</button>
                         </div>
                     </td>
                 </tr>
@@ -90,4 +90,21 @@
 
 {% block js %}
     {{ parent() }}
+    <script>
+        function deleteUser(user_id){
+            if (window.confirm("Are you sure?")) {
+                $.post('/user/delete/'+user_id,{
+                    'csrf':getCSRFToken()
+                },function(){
+                    window.location.reload();
+                }).fail(function(xhr){
+                    if(xhr.status = 403){
+                        // window.location='/';
+                    }
+                    alert("Internal Error");
+                });
+            }
+        }
+    </script>
+
 {% endblock %}

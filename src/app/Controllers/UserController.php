@@ -180,7 +180,7 @@ class UserController extends \App\Controllers\BaseController
             return;
         }
 
-        $this->jsonResponse(['msg'=>'Delete Success'],500);
+        $this->jsonResponse(['msg'=>'Delete Success'],200);
     }
 
     public function updateUser($user_id)
@@ -260,6 +260,7 @@ class UserController extends \App\Controllers\BaseController
 
         $twig = $di->get('twig');
         echo $twig->render('list_users.html.twig',[
+            'csrf'=>$this->getCsrfToken(),
             'users'=>$results,
             'pages'=>(int)$pages,
             'current_page'=>$page, //XSS prevention
