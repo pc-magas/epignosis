@@ -54,7 +54,7 @@ class VaccationService
             throw new \InvalidArgumentException("Range Must Be on the future");
         }
 
-        $sql = "INSERT INTO vaccations(user_id,`from`,until,comment) VALUES (:user_id,:from,:until,:comment);";
+        $sql = "INSERT INTO vaccations(user_id,`from`,until,comments) VALUES (:user_id,:from,:until,:comment);";
 
         try {
 
@@ -69,6 +69,7 @@ class VaccationService
             return true;
 
         }catch(\PDOException $e){
+            var_dump($e->getMessage());
             return false;
         }
     }

@@ -57,6 +57,11 @@ class DatabaseTestCase extends \Tests\TestBase {
         $manager = new Manager($config, new StringInput(' '), new NullOutput());
         $this->migrationManager = $manager;
 
+        try{
+            $this->migrationManager->rollback('testing','all');
+        }catch(\Exception $e){
+            
+        }
         $this->migrationManager->migrate('testing');
 
         // You can change default fetch mode after the seeding

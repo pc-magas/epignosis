@@ -12,6 +12,6 @@ final class DateContraint extends AbstractMigration
 
     public function down(): void
     {
-        $this->execute('ALTER TABLE vaccations drop constraint date_range_valid');
+        $this->execute('ALTER TABLE vaccations drop constraint IF EXISTS date_range_valid');
     }
 }

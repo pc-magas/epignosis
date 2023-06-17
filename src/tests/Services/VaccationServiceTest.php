@@ -138,7 +138,6 @@ class VaccationServiceTest extends DatabaseTestCase
     {
         $user = $this->createTestUser(true,false);
 
-
         $dbService = $this->dBConnection();
         $user_service = new UserService($dbService,$this->dummyMail());
         $vaccationService = new VaccationService($dbService,$user_service);
