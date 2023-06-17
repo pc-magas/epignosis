@@ -136,6 +136,10 @@ class Application
         $this->router->get('/vaccation/add',function() use ($di){
             $di->get(\App\Controllers\VaccationController::class)->addVaccationPage();
         });
+
+        $this->router->post('/vaccation/add',function() use ($di){
+            $di->get(\App\Controllers\VaccationController::class)->savePendingVaccation();
+        });
     }
 
 

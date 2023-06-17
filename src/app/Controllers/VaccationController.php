@@ -19,10 +19,11 @@ class VaccationController extends BaseController
         echo $twig->render('save_vaccation.html.twig',[
             'csrf'=>$this->getCsrfToken()
         ]);
+
         return;
     }
 
-    public function add()
+    public function savePendingVaccation()
     {
         if(!$this->logedinAsEmployee()){
             $this->jsonResponse(['msg'=>'User cannot perform this action'],403);
@@ -48,7 +49,7 @@ class VaccationController extends BaseController
         $session = $di->get('session');
 
         try{
-            if(!$service->save((int)$session->user['user_id'], new Carbon($from), new Carbon($until),$comment)){
+            if(!$service->addPendingVaccationRequest((int)$session->user['user_id'], new Carbon($from), new Carbon($until),$comment)){
                 $this->jsonResponse(['msg'=>"Save failed"],500);
                 return;
             }

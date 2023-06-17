@@ -37,7 +37,7 @@ class VaccationService
      * 
      * @return bool
      */
-    public function add(int $user_id, Carbon $from, Carbon $until, string $comment):bool
+    public function addPendingVaccationRequest(int $user_id, Carbon $from, Carbon $until, string $comment):bool
     {
         if(!$this->userService->userExists($user_id)){
             throw new \InvalidArgumentException("User ${user_id} does not exist",UserService::INVALID_USER_ID);

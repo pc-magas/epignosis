@@ -144,7 +144,7 @@ class VaccationServiceTest extends DatabaseTestCase
         $vaccationService = new VaccationService($dbService,$user_service);
 
         $dt = Carbon::now();
-        $status=$vaccationService->add($user['user_id'],$dt,$dt,"");
+        $status=$vaccationService->addPendingVaccationRequest($user['user_id'],$dt,$dt,"");
 
         $this->assertTrue($status);
 
@@ -193,7 +193,7 @@ class VaccationServiceTest extends DatabaseTestCase
         $user_service = new UserService($dbService,$this->dummyMail());
         $vaccationService = new VaccationService($dbService,$user_service);
 
-        $status = $vaccationService->add($user['user_id'],$insertFrom,$insertUntil,"");
+        $status = $vaccationService->addPendingVaccationRequest($user['user_id'],$insertFrom,$insertUntil,"");
 
         $this->assertFalse($status);
 
@@ -238,7 +238,7 @@ class VaccationServiceTest extends DatabaseTestCase
         $user_service = new UserService($dbService,$this->dummyMail());
         $vaccationService = new VaccationService($dbService,$user_service);
 
-        $status = $vaccationService->add($user['user_id'],$insertFrom,$insertUntil,"");
+        $status = $vaccationService->addPendingVaccationRequest($user['user_id'],$insertFrom,$insertUntil,"");
 
         $this->assertFalse($status);
 
@@ -282,7 +282,7 @@ class VaccationServiceTest extends DatabaseTestCase
         $user_service = new UserService($dbService,$this->dummyMail());
         $vaccationService = new VaccationService($dbService,$user_service);
 
-        $status = $vaccationService->add($user['user_id'],$insertFrom,$insertUntil,"");
+        $status = $vaccationService->addPendingVaccationRequest($user['user_id'],$insertFrom,$insertUntil,"");
 
         $this->assertFalse($status);
 

@@ -4,7 +4,7 @@
 
 {% block content %}
 <form method="post" action="/vaccation/add" onsubmit="handleSubmit(event,this)">
-    <div class="row">
+    <div class="row mb-1">
             <div class="col">
                 <input type="date" class="form-control" name="from" placeholder="From" required>
             </div>
@@ -15,7 +15,7 @@
     <div class="form-group">
         <textarea class="form-control" name="comment" rows="3"></textarea>
     </div>
-    <button type="submit">Save Vaccation Datetime</button>
+    <button class="btn btn-primary" type="submit">Save Vaccation Request</button>
 </form>
 {% endblock %}
 
@@ -24,7 +24,7 @@
        <link rel="stylesheet" href="https://code.jquery.com/ui/1.13.2/themes/base/jquery-ui.min.css">
 {% endblock %}
 
-{% block javascript %}
+{% block js %}
 
    {{ parent() }}
    <script
@@ -41,7 +41,7 @@
             return document.head.querySelector("[name=csrf][content]").content;
         }
 
-        function handleUserSubmit(event,form){
+        function handleSubmit(event,form){
             event.preventDefault();
 
             const action = $(form).attr('action');
