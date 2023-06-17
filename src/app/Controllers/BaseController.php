@@ -38,7 +38,6 @@ class BaseController
     public function validateCSRF(string $token):bool
     {
         $csrf = $this->getCsrfToken();
-        file_put_contents($_SERVER['DOCUMENT_ROOT'].'/debug.txt',$csrf,FILE_APPEND);
         return $csrf === $token;
     }
 
@@ -65,6 +64,22 @@ class BaseController
         return $token;
     }
 
+     /**
+     * Check if user is loggedin and has specific role
+     * @param string $role
+     * @return bool
+     */
+    public function logedinAsRole(string $role):bool
+    {
+        $role = strtoupper(trim($role));
+        if(!in_array($role,['MANAGER','EMPLOYEE'])){
+            throw new \InvalidArgumentException("Invalid User Role");
+        }
+
+        $session = $this->getServiceContainer()->get('session');
+        return !empty($session->user) && !empty($session->user['role']) && $session->user['role'] == $role;
+    }
+
     /**
      * Check if user is loggedin as manager
      *
@@ -72,8 +87,17 @@ class BaseController
      */
     public function logedinAsManager():bool
     {
-        $session = $this->getServiceContainer()->get('session');
-        return !empty($session->user) && !empty($session->user['role']) && $session->user['role'] == 'MANAGER';
+        return $this->loggedinAsRole('MANAGER');
+    }
+
+    /**
+     * Check if user is loggedin as manager
+     *
+     * @return bool
+     */
+    public function logedinAsEmployee():bool
+    {
+        return $this->loggedinAsRole('EMPLOYE');
     }
 
     public function logedinAsUser(int $user_id):bool

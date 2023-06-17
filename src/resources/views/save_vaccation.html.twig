@@ -1,0 +1,68 @@
+{% extends './layout.html.twig' %}
+
+{% set title = 'Insert a vaccation' %}
+
+{% block content %}
+<form method="post" action="/vaccation/add" onsubmit="handleSubmit(event,this)">
+    <div class="row">
+            <div class="col">
+                <input type="date" class="form-control" name="from" placeholder="From" required>
+            </div>
+            <div class="col">
+                <input type="date" class="form-control" name="until" placeholder="Until" required>
+            </div>
+    </div>
+    <div class="form-group">
+        <textarea class="form-control" name="comment" rows="3"></textarea>
+    </div>
+    <button type="submit">Save Vaccation Datetime</button>
+</form>
+{% endblock %}
+
+{% block css %}
+    {{ parent() }}
+       <link rel="stylesheet" href="https://code.jquery.com/ui/1.13.2/themes/base/jquery-ui.min.css">
+{% endblock %}
+
+{% block javascript %}
+
+   {{ parent() }}
+   <script
+			  src="https://code.jquery.com/ui/1.13.2/jquery-ui.min.js"
+			  integrity="sha256-lSjKY0/srUM9BE3dPm+c4fBo1dky2v27Gdjm2uoZaL0="
+			  crossorigin="anonymous"></script>
+    <script>
+
+        $(document).ready(function(){
+
+        });
+
+        function getCSRFToken(){
+            return document.head.querySelector("[name=csrf][content]").content;
+        }
+
+        function handleUserSubmit(event,form){
+            event.preventDefault();
+
+            const action = $(form).attr('action');
+            const method = $(form).attr('method');
+            console.log($(form).serialize()+"&csrf="+getCSRFToken());
+            $.ajax({
+                'action': action,
+                'method':method,
+                'data':$(form).serialize()+"&csrf="+getCSRFToken(),
+                success: function(){
+                    form.reset();
+                },
+                error: function(xhr, status) {
+                    const statusCode = xhr.status;
+                    if(statusCode == 403){
+                        window.location='/';
+                    } 
+                }
+            });
+        }
+
+    </script>
+{% endblock %}
+

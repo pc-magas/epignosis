@@ -132,6 +132,10 @@ class Application
         $this->router->get('/users',function() use ($di){
             $di->get(\App\Controllers\UserController::class)->listUsers();
         });
+
+        $this->router->get('/vaccation/add',function() use ($di){
+            $di->get(\App\Controllers\VaccationController::class)->addVaccationPage();
+        });
     }
 
 

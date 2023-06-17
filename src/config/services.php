@@ -70,5 +70,8 @@ return [
     },
     \App\Controllers\UserController::class => function(ContainerInterface $int){
         return new \App\Controllers\UserController($int);
+    },
+    \App\Controllers\VaccationController::class => function(ContainerInterface $int){
+        return new \App\Controllers\VaccationController($int);
     }
 ];
