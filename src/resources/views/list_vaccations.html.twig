@@ -11,12 +11,36 @@
 
     <table class="table">
         <thead>
-            <th>Employee Name</th>
-            <th>From</th>
-            <th>Until</th>
-            <th>Requested At</th>
-            <th>Status</th>
-            <th>Actions</th>
+            <tr>
+                <th colspan="5">
+                    {% if  user_role == 'EMPLOYEE' %}
+                        My Vaccation Requests
+                    {% else %}
+                        Vaccation Lists
+                    {% endif %}
+
+                </th>
+                <th>
+                    <div class="dropdown">
+                        <button class="btn btn-secondary dropdown-toggle btn-sm" type="button" id="items_per_page" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                          Items Per page
+                        </button>
+                        <div class="dropdown-menu" aria-labelledby="items_per_page">
+                          <a class="dropdown-item" href="/vaccations?limit=10">10</a>
+                          <a class="dropdown-item" href="/vaccations?limit=100">50</a>
+                          <a class="dropdown-item" href="/vaccations?limit=100">100</a>
+                        </div>
+                    </div>
+                </th>
+            </tr>
+            <tr>
+                <th>Employee Name</th>
+                <th>From</th>
+                <th>Until</th>
+                <th>Requested At</th>
+                <th>Status</th>
+                <th>Actions</th>
+            </tr>
         </thead>
         <tbody>
             {% for vaccation in vaccations %}
