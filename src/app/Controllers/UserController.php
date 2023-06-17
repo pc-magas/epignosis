@@ -236,7 +236,6 @@ class UserController extends \App\Controllers\BaseController
             $this->jsonResponse(['msg'=>'User\'s password sucessfylly has been updated'],200);
             return;
         }catch(\InvalidArgumentException $e) {
-            var_dump($e->getMessage());
             return;
         }
     }

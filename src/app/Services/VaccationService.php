@@ -184,7 +184,6 @@ class VaccationService
             
             return true;
         }catch(\PDOException $e){
-            dump($e->getMessage());
             $this->dbConnection->rollback();
             return false;
         }

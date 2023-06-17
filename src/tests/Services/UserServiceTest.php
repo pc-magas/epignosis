@@ -15,7 +15,6 @@ class UserServiceTest extends DatabaseTestCase
         $user = $this->createTestUser();
 
         $service = new UserService($this->dBConnection(),$this->dummyMail());
-        
         $info = $service->login($user['email'],'1234');
         
         $expectedUser_id=(int)$user['user_id'];
@@ -137,7 +136,6 @@ class UserServiceTest extends DatabaseTestCase
         $mailer = $this->dummyMail();
 
         $service = new UserService($conn,$mailer);
-        var_dump($user['token']);
         $this->assertTrue($service->activate($user['token']));
     }
 
