@@ -7,6 +7,7 @@ use App\Services\VaccationService;
 
 use Carbon\Carbon;
 
+use Carbon\CarbonImmutable;
 use Tests\DatabaseTestCase;
 
 class VaccationServiceTest extends DatabaseTestCase
@@ -175,7 +176,7 @@ class VaccationServiceTest extends DatabaseTestCase
         $stmt->execute();
 
         $insertFrom = new Carbon();
-        $insertUntil_orig = (new Carbon())->modify('+3 days');
+        $insertUntil_orig = (new CarbonImmutable())->modify('+3 days');
 
         // I manually insert a vaccation in order to have controll to the insertion time
         $sql = "INSERT INTO vaccations(user_id,`from`,until,aproval_status) VALUES (:user_id,:from,:until,'PENDING');";
@@ -186,13 +187,13 @@ class VaccationServiceTest extends DatabaseTestCase
             'until'=>$insertUntil_orig->format('Y-m-d')
         ]);
 
-        $insertUntil = $insertFrom->modify("+10 days");
+        $insertUntil = (new Carbon($insertFrom))->modify("+10 days");
 
         $dbService = $this->dBConnection();
         $user_service = new UserService($dbService,$this->dummyMail());
         $vaccationService = new VaccationService($dbService,$user_service);
 
-        $status = $vaccationService->addPendingVaccationRequest($user['user_id'],$insertFrom,$insertUntil,"");
+        $status = $vaccationService->addPendingVaccationRequest($user['user_id'],new Carbon($insertFrom),$insertUntil,"");
 
         $this->assertFalse($status);
 
@@ -231,7 +232,7 @@ class VaccationServiceTest extends DatabaseTestCase
             'until'=>$insertUntil_orig->format('Y-m-d')
         ]);
 
-        $insertUntil = $insertFrom->modify("+10 days");
+        $insertUntil = (new Carbon($insertFrom))->modify("+10 days");
 
         $dbService = $this->dBConnection();
         $user_service = new UserService($dbService,$this->dummyMail());
@@ -275,7 +276,7 @@ class VaccationServiceTest extends DatabaseTestCase
             'until'=>$insertUntil_orig->format('Y-m-d')
         ]);
 
-        $insertUntil = $insertFrom->modify("+10 days");
+        $insertUntil = (new Carbon($insertFrom))->modify("+10 days");
 
         $dbService = $this->dBConnection();
         $user_service = new UserService($dbService,$this->dummyMail());

@@ -69,7 +69,6 @@ class VaccationService
             return true;
 
         }catch(\PDOException $e){
-            var_dump($e->getMessage());
             return false;
         }
     }
