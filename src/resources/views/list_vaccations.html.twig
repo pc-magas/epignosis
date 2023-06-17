@@ -22,11 +22,11 @@
                             {% if vaccation.aproval_status == 'PENDING' %}
                                 {% if  user_role == 'MANAGER' %}
                                     <div class="btn-group" role="group" aria-label="Basic example">
-                                        <button type="button" class="btn btn-success btn-sm" data-vaccation_id="{{vaccation.vaccation_id}}" onclick="approve({{vaccation.vaccation_id}})">APPROVE</button>
-                                        <button type="button" class="btn btn-danger btn-sm" data-vaccation_id="{{vaccation.vaccation_id}}" onclick="reject({{vaccation.vaccation_id}})">REJECT</button>
+                                        <button type="button" class="btn btn-success btn-sm" onclick="approve({{vaccation.vaccation_id}})">APPROVE</button>
+                                        <button type="button" class="btn btn-danger btn-sm" onclick="reject({{vaccation.vaccation_id}})">REJECT</button>
                                     </div>
                                 {% else %}
-                                    <button type="button" class="btn btn-danger btn-sm" data-vaccation_id="{{vaccation.vaccation_id}}" onclick="delete({{vaccation.vaccation_id}})">DELETE</button>
+                                    <button type="button" class="btn btn-danger btn-sm" onclick="vaccation_delete({{vaccation.vaccation_id}})">DELETE</button>
                                 {% endif %}
                             {% endif %}
                         </td>
@@ -41,7 +41,6 @@
 
     <script>
 
-
         {% if  user_role == 'MANAGER' %}
 
             function changeApprocalStatus(vaccation_id, status){
@@ -52,6 +51,9 @@
                 },function(data){
                     window.location.reload();
                 }).fail(function(xhr){
+                    if(xhr.status = 403){
+                        window.location='/';
+                    }
                     alert("Internal Error");
                 });
             }
@@ -69,9 +71,22 @@
             }
 
         {% else %}
-            function delete(vaccation_id){
+            function vaccation_delete(vaccation_id) {
+
                 if (window.confirm("Are you sure?")) {
-                    // Ajax Delete
+                    
+                    $.post('/vaccation/delete',{
+                        'token':getCSRFToken(),
+                        'vaccation_id':vaccation_id
+                    }).done(function(){
+                        window.location.reload();
+                    }).fail(function(xhr){
+                        if(xhr.status = 403){
+                            window.location='/';
+                        }
+                        alert("Internal Error");
+                    });
+
                 }
             }
         {% endif %}
