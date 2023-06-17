@@ -18,11 +18,13 @@ final class VaccationsDateIndex extends AbstractMigration
      */
     public function up(): void
     {
-        $this->execute('CREATE UNIQUE INDEX IF NOT EXISTS no_duplicate_vaccations ON vaccations(`user_id`,from,aproval_status);');
+        $this->execute('CREATE UNIQUE INDEX IF NOT EXISTS no_duplicate_vaccations ON vaccations(`user_id`,`from`,aproval_status);');
     }
 
     public function down(): void
     {
-        $this->execute('DROP INDEX IF EXISTS no_duplicate_vaccations ON vaccations;');
+        $this->execute('ALTER TABLE vaccations DROP FOREIGN KEY vaccations_ibfk_1 ;');
+        $this->execute('DROP INDEX IF EXISTS no_duplicate_vaccations on vaccations;');
+        $this->execute('ALTER TABLE vaccations ADD CONSTRAINT FOREIGN KEY user_id REFERENCES users(user_id);');
     }
 }
