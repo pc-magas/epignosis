@@ -1,6 +1,14 @@
 {% extends './layout.html.twig' %}
 
+{% set title = 'Vaccation Management' %}
+
 {% block content %}
+    {% if  user_role == 'EMPLOYEE' %}
+        <div class="mt-2 mb-2">
+            <a href="/vaccation/add" class="btn btn-primary">Request Vaccation</a>
+        </div>
+    {% endif %}
+
     <table class="table">
         <thead>
             <th>Employee Name</th>
@@ -34,7 +42,9 @@
             {% endfor %}
         </tbody>
     </table>
+      
 {% endblock %}
+
 
 {% block js %}
     {{ parent() }}
