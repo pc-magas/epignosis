@@ -66,7 +66,29 @@
             {% endfor %}
         </tbody>
         <tfoot>
-            
+            <tr><td colspan="6">
+                <ul class="pagination m-auto">
+                    <li class="page-item"><a class="page-link" href="/vaccations?page=1&limit={{limit}}">First</a></li>
+
+                    {% if current_page == 1 %}
+                        <li class="page-item disabled"><a class="page-link" href="/vaccations?page=1&limit={{limit}}">Previous</a></li>
+                    {% else %}
+                        <li class="page-item"><a class="page-link" href="/vaccations?page={{current_page-1}}&limit={{limit}}">Previous</a></li>
+                    {% endif %}
+
+                    {% for page in 1..pages %}
+                        <li class="page-item {{ (page==current_page)?"active":"" }} "><a href="/vaccations?page={{page}}&limit={{limit}}" class="page-link {{active}}" >{{page}}</a></li>
+                    {% endfor %}
+
+                    {% if current_page < pages %}
+                        <li class="page-item"><a class="page-link" href="/vaccations?page={{current_page-1}}&limit={{limit}}">Next</a></li>
+                    {% else %}
+                        <li class="page-item disabled"><a class="page-link" href="/vaccations?page=pages&limit={{limit}}">Next</a></li>
+                    {% endif %}
+
+                    <li class="page-item"><a class="page-link" href="/vaccations?page={{last_page}}&limit={{limit}}">Last</a></li>
+                </ul>
+            </td></tr>
         </tfoot>
     </table>
       

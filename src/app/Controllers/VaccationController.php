@@ -130,7 +130,11 @@ class VaccationController extends BaseController
         echo $twig->render('list_vaccations.html.twig',[
             'csrf'=>$this->getCsrfToken(),
             'vaccations'=>$vaccations,
-            'user_role'=>$session->user['role']
+            'user_role'=>$session->user['role'],
+            'pages'=>(int)$pages,
+            'current_page'=>(int)$page, //XSS prevention
+            'last_page'=>(int)$pages,
+            'limit'=>(int)$limit //XSS prevention
         ]);
     }
 
