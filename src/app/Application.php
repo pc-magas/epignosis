@@ -148,6 +148,10 @@ class Application
         $this->router->post('/vaccation/approval_status',function() use ($di){
             $di->get(\App\Controllers\VaccationController::class)->approveReject();
         });
+
+        $this->router->get('/vaccations',function() use ($di){
+            $di->get(\App\Controllers\VaccationController::class)->list();
+        });
     }
 
 

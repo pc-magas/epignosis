@@ -1,0 +1,34 @@
+{% extends './layout.html.twig' %}
+
+{% block content %}
+
+    <table  class="table">
+        <thead>
+            <th>Employee Name</th>
+            <th>From</th>
+            <th>Until</th>
+            <th>Requested At</th>
+            <th>Status</th>
+            <th>Actions</th>
+        </thead>
+        <tbody>
+            {% for vaccation in vaccations %}
+                <tr>
+                        <td>{{vaccation.user_name}}</td>
+                        <td>{{vaccation.from | format_date(pattern="d/M/Y")}}</td>
+                        <td>{{vaccation.until | format_date(pattern="d/M/Y")}}</td>
+                        <td>{{vaccation.request_timestamp | format_date(pattern="d/M/Y H:m")}}</td>
+                        <td>{{vaccation.aproval_status}}</td>
+                        <td>
+                            {% if vaccation.approval_status == 'PENDING' %}
+                              <div class="btn-group" role="group" aria-label="Basic example">
+                                <button type="button" class="btn btn-primary" data-vaccation_id="{{vaccation.vaccation_id}}" onclick="approve(this)">APPROVE</button>
+                                <button type="button" class="btn btn-danger" data-vaccation_id="{{vaccation.vaccation_id}}" onclick="reject(this)">REJECT</button>
+                              </div>
+                            {% endif %}
+                        </td>
+                </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+{% endblock %}

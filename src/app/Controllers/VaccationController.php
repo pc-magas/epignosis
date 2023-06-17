@@ -77,8 +77,8 @@ class VaccationController extends BaseController
         $di = $this->getServiceContainer();
 
         $service = $di->get(VaccationService::class);
-        $session = $di->get('session');
 
+        $session = $di->get('session');
         $user_id = (int)$session->user['user_id'];
 
         if(!isset($_POST['vaccation_id'])){
@@ -104,12 +104,34 @@ class VaccationController extends BaseController
 
     public function list()
     {
+        $page = $_GET['page']??1;
+        $limit = $_GET['limit']??10;
 
-    }
+        $di = $this->getServiceContainer();
+        /**
+         * @var VaccationService
+         */
+        $service = $di->get(VaccationService::class);
 
-    public function listLoggedinUser()
-    {
+        if($this->logedinAsManager()){
+            $vaccations = $service->list($page,$limit);
+        } else if($this->logedinAsEmployee()){
+            $session = $di->get('session');
+            $user_id = (int)$session->user['user_id'];
 
+            $vaccations = $service->list($page,$limit,$user_id);
+        } else {
+            http_response_code(403);
+            header('Location: '.Generic::getAppUrl(''));
+            return;
+        }
+
+        $twig = $di->get('twig');
+
+        echo $twig->render('list_vaccations.html.twig',[
+            'csrf'=>$this->getCsrfToken(),
+            'vaccations'=>$vaccations,
+        ]);
     }
 
     public function approveReject()

@@ -24,7 +24,13 @@ return [
     },
     'twig' => function(ContainerInterface $int){
         $loader = new \Twig\Loader\FilesystemLoader(Application::VIEWS_DIR);
-        return new \Twig\Environment($loader);
+        $twig = new \Twig\Environment($loader,[
+            'debug' => $_ENV['APP_ENV']==='develop'
+        ]);
+        $twig->addExtension(new \Twig\Extension\DebugExtension());
+        $twig->addExtension(new \Twig\Extra\Intl\IntlExtension());
+
+        return $twig;
     },
     'mail' => function(ContainerInterface $int){
 

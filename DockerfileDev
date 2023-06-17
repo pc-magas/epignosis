@@ -10,7 +10,7 @@ RUN docker-php-ext-install pdo mysqli pdo_mysql &&\
         -o /usr/local/bin/install-php-extensions \
         https://github.com/mlocati/docker-php-extension-installer/releases/latest/download/install-php-extensions && \
     chmod +x /usr/local/bin/install-php-extensions && \
-	/usr/local/bin/install-php-extensions zip  pdo mysqli pdo_mysql &&\
+	/usr/local/bin/install-php-extensions zip pdo mysqli pdo_mysql intl &&\
 	rm -rf /usr/local/bin/install-php-extensions && \
  	apt-get autopurge -y &&\
  	apt-get autoremove -y &&\

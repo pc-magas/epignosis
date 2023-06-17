@@ -99,12 +99,12 @@ class VaccationService
     /**
      * List Users
      *
-     * @param integer $user_id 
      * @param integer $page
      * @param integer $limit
+     * @param integer $user_id 
      * @return array
      */
-    public function list(int $page, int $limit, ?int $user_id):array
+    public function list(int $page, int $limit, ?int $user_id=null):array
     {
         $limit = $limit<=0?10:$limit;
 
