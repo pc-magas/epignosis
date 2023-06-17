@@ -58,7 +58,46 @@ class VaccationController extends BaseController
             return;
         }   
 
-        $this->jsonResponse(['msg'=>"Save failed"],201);
+        $this->jsonResponse(['msg'=>"Save sucess"],201);
+        return;
+    }
+
+    public function delete()
+    {
+        if(!$this->logedinAsEmployee()){
+            $this->jsonResponse(['msg'=>'User cannot perform this action'],403);
+            return;
+        }
+        
+        if(!isset($_POST['token']) || !$this->validateCSRF($_POST['token'])){
+            $this->jsonResponse(['msg'=>'Invalid Request'],403);
+            return;
+        }
+
+        $di = $this->getServiceContainer();
+
+        $service = $di->get(VaccationService::class);
+        $session = $di->get('session');
+
+        $user_id = (int)$session->user['user_id'];
+
+        if(!isset($_POST['vaccation_id'])){
+            $this->jsonResponse(['msg'=>"VAccation Id has not been provided"],400);
+        }
+
+        $vaccation_id = (int)$_POST['vaccation_id'];
+
+        try{
+            if(!$service->delete($vaccation_id,$user_id)){
+                $this->jsonResponse(['msg'=>"Delete failed"],500);
+                return;
+            }
+        } catch(\InvalidArgumentException $e) {
+            $this->jsonResponse(['msg'=>$e->getMessage()],400);
+            return;
+        }
+
+        $this->jsonResponse(['msg'=>"Delete sucess"],201);
         return;
     }
 
@@ -67,10 +106,7 @@ class VaccationController extends BaseController
 
     }
 
-    public function delete($vaccation_id)
-    {
-        
-    }
+    
 
     public function approveReject($vaccation_id)
     {

@@ -140,6 +140,10 @@ class Application
         $this->router->post('/vaccation/add',function() use ($di){
             $di->get(\App\Controllers\VaccationController::class)->savePendingVaccation();
         });
+
+        $this->router->post('/vaccation/delete',function() use ($di){
+            $di->get(\App\Controllers\VaccationController::class)->delete();
+        });
     }
 
 
