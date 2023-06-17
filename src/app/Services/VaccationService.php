@@ -43,8 +43,15 @@ class VaccationService
             throw new \InvalidArgumentException("User ${user_id} does not exist",UserService::INVALID_USER_ID);
         }
 
+        $from = $from->setTime(0,0,0,0);
+        $until = $until->setTime(0,0,0,0);
+
         if($until->lessThan($from)){
             throw new \InvalidArgumentException("Invalid Range from Datetime must be LESS or equal to than until");
+        }
+
+        if($from->lessThan(Carbon::now()->setTime(0,0,0,0))){
+            throw new \InvalidArgumentException("Range Must Be on the future");
         }
 
         $sql = "INSERT INTO vaccations(user_id,`from`,until) VALUES (:user_id,:from,:until);";

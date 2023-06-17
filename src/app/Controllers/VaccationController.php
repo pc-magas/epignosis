@@ -4,9 +4,10 @@ namespace App\Controllers;
 
 class VaccationController extends BaseController
 {
+
     public function add()
     {
-        
+            
     }
 
     public function list($user_id)
