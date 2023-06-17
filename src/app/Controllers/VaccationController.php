@@ -116,10 +116,10 @@ class VaccationController extends BaseController
         $session = $di->get('session');
 
         if($this->logedinAsManager()){
-            $vaccations = $service->list($page,$limit);
+            $vaccations = $service->list($page,$limit,$pages);
         } else if($this->logedinAsEmployee()){
             $user_id = (int)$session->user['user_id'];            
-            $vaccations = $service->list($page,$limit,$user_id);
+            $vaccations = $service->list($page,$limit,$pages,$user_id);
         } else {
             http_response_code(403);
             header('Location: '.Generic::getAppUrl(''));

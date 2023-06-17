@@ -104,7 +104,7 @@ class VaccationService
      * @param integer $user_id 
      * @return array
      */
-    public function list(int $page, int $limit, ?int $user_id=null):array
+    public function list(int $page, int $limit, ?int &$pages ,?int $user_id=null):array
     {
         $limit = $limit<=0?10:$limit;
 
@@ -128,7 +128,6 @@ class VaccationService
         $stmt->execute($data);   
         
         $count = $stmt->fetch(\PDO::FETCH_COLUMN); 
-
         $pages = Generic::calculateNumberOfPages($limit,$count);
 
         if($page > $pages){

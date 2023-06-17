@@ -38,7 +38,7 @@ class Generic
      */
     public static function calculateNumberOfPages(int $records_per_page, int $total_records_numbers):int
     {
-        return (int)ceil((float)$records_per_page/(float)$total_records_numbers);
+        return (int)ceil((float)$total_records_numbers/(float)$records_per_page);
     }
 
     /**

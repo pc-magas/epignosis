@@ -316,7 +316,9 @@ class VaccationServiceTest extends DatabaseTestCase
         $user_service = new UserService($dbService,$this->dummyMail());
         $vaccationService = new VaccationService($dbService,$user_service);
 
-        $listedVaccations = $vaccationService->list(1,10,$user['user_id']);
+        $listedVaccations = $vaccationService->list(1,10,$pages,$user['user_id']);
+        $this->assertEquals(20/10,$pages);
+
         $this->assertCount(10,$listedVaccations);
         $this->assertNotEquals(count($listedVaccations),count($returendVaccations));
 
@@ -359,9 +361,12 @@ class VaccationServiceTest extends DatabaseTestCase
         $user_service = new UserService($dbService,$this->dummyMail());
         $vaccationService = new VaccationService($dbService,$user_service);
 
-        $listedVaccations = $vaccationService->list(1,10,$user['user_id']);
+        $listedVaccations = $vaccationService->list(1,10,$pages);
+
         $this->assertCount(10,$listedVaccations);
         $this->assertNotEquals(count($listedVaccations),count($returendVaccations));
+
+        $this->assertEquals(30/10,$pages);
 
         foreach($listedVaccations as $vaccation){
 
