@@ -15,17 +15,19 @@ class Vaccations extends AbstractSeed
      */
     public function run(): void
     {
-        $stmt = $this->query('SELECT * FROM users where active=true and role=\'MANAGER\'');
+        $stmt = $this->query('SELECT * FROM users where active=true and role=\'EMPLOYEE\'');
+        $statuses = ['PENDING','REJECTED','APPROVED'];
         while($user = $stmt->fetch(\PDO::FETCH_ASSOC)){
 
             $now = \Carbon\Carbon::now()->modify("+".random_int(10,20)." day");
             
             for($i=10;$i>0;$i--){
+                shuffle($statuses);
                 $data = [
                     'user_id'=>$user['user_id'],
                     'from'=>$now->format('Y-m-d'),
                     'until'=>$now->modify('+10 days'),
-                    'aproval_status'=>array_rand(['PENDING','REJECTED','APPROVED'])
+                    'aproval_status'=>$statuses[0]
                 ];
                 try{
                     $this->insert('vaccations', $data);
