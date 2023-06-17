@@ -83,6 +83,7 @@ class VaccationController extends BaseController
 
         if(!isset($_POST['vaccation_id'])){
             $this->jsonResponse(['msg'=>"VAccation Id has not been provided"],400);
+            return;
         }
 
         $vaccation_id = (int)$_POST['vaccation_id'];
@@ -101,15 +102,45 @@ class VaccationController extends BaseController
         return;
     }
 
-    public function list($user_id)
+    public function list()
     {
 
     }
 
-    
-
-    public function approveReject($vaccation_id)
+    public function approveReject()
     {
+        if(!$this->logedinAsManager()){
+            http_response_code(403);
+            header('Location: '.Generic::getAppUrl(''));
+        }
+             
+        if(!$this->validateCSRF($_POST['token'])){
+            $this->jsonResponse(['msg'=>'Invalid Request'],403);
+            return;
+        }
 
+        if(!isset($_POST['vaccation_id'])){
+            $this->jsonResponse(['msg'=>"VAccation Id has not been provided"],400);
+            return;
+        }
+
+        $vaccation_id = (int)$_POST['vaccation_id'];
+
+        if(!isset($_POST['approval_status']) || empty($_POST['approval_status'])){
+            $this->jsonResponse(['msg'=>"Approval Status Has not been provided"],400);
+            return;
+        }
+
+        $di = $this->getServiceContainer();
+        $service = $di->get(VaccationService::class);
+
+        
+        if(!$service->changeVaccationStatus($vaccation_id,$_POST['approval_status'])){
+            $this->jsonResponse(['msg'=>"Save Failed"],500);
+            return;
+        }
+
+        $this->jsonResponse(['msg'=>"Save Sucess"],200);
+        return;
     }
 }

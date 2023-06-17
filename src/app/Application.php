@@ -144,6 +144,10 @@ class Application
         $this->router->post('/vaccation/delete',function() use ($di){
             $di->get(\App\Controllers\VaccationController::class)->delete();
         });
+
+        $this->router->post('/vaccation/approval_status',function() use ($di){
+            $di->get(\App\Controllers\VaccationController::class)->approveReject();
+        });
     }
 
 

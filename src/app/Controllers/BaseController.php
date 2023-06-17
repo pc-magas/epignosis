@@ -38,6 +38,7 @@ class BaseController
     public function validateCSRF(string $token):bool
     {
         $csrf = $this->getCsrfToken();
+        file_put_contents($_SERVER['DOCUMENT_ROOT'].'/debug.txt',json_encode([$csrf,$token]));
         return $csrf === $token;
     }
 
@@ -53,7 +54,7 @@ class BaseController
 
         if(empty($session->csrf)){
             $token = base64_encode(random_bytes(100));
-            $token = str_replace('=','',$token);
+            $token = str_replace(['=',' ','+','\\','/'],'',$token);
             $token = substr($token,0,50);
             $session->csrf = $token;
             

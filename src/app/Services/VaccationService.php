@@ -209,7 +209,7 @@ class VaccationService
         $vaccation = $this->findVaccation($vaccation_id);
 
         if($vaccation['aproval_status'] != 'PENDING'){
-            return false;
+            throw new \InvalidArgumentException("Invalid Approval Status",UserService::INVALID_USER_ID);
         }
 
         $sql = "UPDATE vaccations set aproval_status=:status where vaccation_id = :vaccation_id and aproval_status='PENDING'";
