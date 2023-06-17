@@ -21,8 +21,11 @@
         {% endblock %}
 
     </head>
-    <body class="container">
-        <main>
+    <body >
+        <header class="d-flex flex-row flex-row-reverse p-1 bg-dark">
+            <a class="btn btn-danger ml-1" href="logout">logout</a>
+        </header>
+        <main class="container">
             {% block content %}
             {% endblock %}
         </main>
