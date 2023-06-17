@@ -44,10 +44,6 @@
 			  crossorigin="anonymous"></script>
     <script>
         
-        function getCSRFToken(){
-            return document.head.querySelector("[name=csrf][content]").content;
-        }
-
         function handleSubmit(event,form){
             event.preventDefault();
 

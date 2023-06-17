@@ -24,7 +24,7 @@
                         <td>{{vaccation.user_name}}</td>
                         <td>{{vaccation.from | format_date(pattern="d/M/Y")}}</td>
                         <td>{{vaccation.until | format_date(pattern="d/M/Y")}}</td>
-                        <td>{{vaccation.request_timestamp | format_date(pattern="d/M/Y H:m")}}</td>
+                        <td>{{vaccation.request_timestamp | format_date(pattern="d/M/Y H:mm")}}</td>
                         <td>{{vaccation.aproval_status}}</td>
                         <td>
                             {% if vaccation.aproval_status == 'PENDING' %}
