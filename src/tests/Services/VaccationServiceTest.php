@@ -5,8 +5,9 @@ namespace Tests\Services;
 use App\Services\UserService;
 use App\Services\VaccationService;
 
-use Tests\DatabaseTestCase;
+use Carbon\Carbon;
 
+use Tests\DatabaseTestCase;
 
 class VaccationServiceTest extends DatabaseTestCase
 {
@@ -133,4 +134,37 @@ class VaccationServiceTest extends DatabaseTestCase
     }
 
 
+    public function testAddVaccation()
+    {
+        $user = $this->createTestUser(true,false);
+
+        $sql = 'DELETE FROM vaccations';
+        $dbService = $this->dBConnection();
+        $stmt = $dbService->prepare($sql);
+        $stmt->execute();
+
+
+        $dbService = $this->dBConnection();
+        $user_service = new UserService($dbService,$this->dummyMail());
+        $vaccationService = new VaccationService($dbService,$user_service);
+
+        $dt = Carbon::now();
+        $status=$vaccationService->add($user['user_id'],$dt,$dt,"");
+
+        $this->assertTrue($status);
+
+        $sql = "SELECT * from vaccations where user_id=:user_id";
+        $stmt = $dbService->prepare($sql);
+        $stmt->execute([
+            'user_id'=>$user['user_id'],
+        ]);
+
+        $results = $stmt->fetchAll(\PDO::FETCH_ASSOC);
+        $this->assertCount(1,$results);
+        
+        $results=$results[0];
+
+        $this->assertEquals($dt->format('Y-m-d'),$results['from']);
+        $this->assertEquals($dt->format('Y-m-d'),$results['until']);
+    }
 }

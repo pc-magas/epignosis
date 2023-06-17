@@ -23,8 +23,12 @@ final class VaccationsDateIndex extends AbstractMigration
 
     public function down(): void
     {
-        $this->execute('ALTER TABLE vaccations DROP FOREIGN KEY vaccations_ibfk_1 ;');
+        $this->execute('ALTER TABLE vaccations DROP FOREIGN KEY IF EXISTS vaccations_users_fk ;');
         $this->execute('DROP INDEX IF EXISTS no_duplicate_vaccations on vaccations;');
-        $this->execute('ALTER TABLE vaccations ADD CONSTRAINT FOREIGN KEY user_id REFERENCES users(user_id);');
+
+        $table = $this->table('vaccations');
+        $table
+            ->addForeignKey('user_id', 'users', 'user_id', ['delete'=> 'CASCADE', 'update'=> 'NO_ACTION', 'constraint'=>'vaccations_users_fk'])
+            ->save();
     }
 }

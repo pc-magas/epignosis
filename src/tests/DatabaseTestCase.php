@@ -67,7 +67,6 @@ class DatabaseTestCase extends \Tests\TestBase {
     {
         parent::tearDown();
         $this->migrationManager->rollback('testing','all');
-
     }
 
 

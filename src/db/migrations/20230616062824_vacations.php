@@ -26,7 +26,7 @@ final class Vacations extends AbstractMigration
             ->addColumn('aproval_status','enum',['values'=>['PENDING','REJECTED','APPROVED'],'null'=>false,'default'=>'PENDING'])
             ->addColumn('comments','text',['null'=>true])
             ->addColumn('request_timestamp', 'timestamp', ['default' => 'CURRENT_TIMESTAMP'])
-            ->addForeignKey('user_id', 'users', 'user_id', ['delete'=> 'CASCADE', 'update'=> 'NO_ACTION'])
+            ->addForeignKey('user_id', 'users', 'user_id', ['delete'=> 'CASCADE', 'update'=> 'NO_ACTION', 'constraint'=>'vaccations_users_fk'])
             ->save();
 
     }
