@@ -252,12 +252,20 @@ class UserController extends \App\Controllers\BaseController
         $page = empty($_GET['page'])?1:(int)$_GET['page'];
         $limit = empty($_GET['limit'])?10:(int)$_GET['limit'];
 
+        /**
+         * @var UserService
+         */
         $service = $di->get(UserService::class);
+        $results = $service->listUsers($page,$limit,$pages);
 
-        $results = $service->listUsers($page,$limit);
-        $statusCode = empty($results)?404:200;
-
-        $this->jsonResponse($results,$statusCode);
+        $twig = $di->get('twig');
+        echo $twig->render('list_users.html.twig',[
+            'users'=>$results,
+            'pages'=>(int)$pages,
+            'current_page'=>$page, //XSS prevention
+            'last_page'=>(int)$pages,
+            'limit'=>(int)$limit //XSS prevention
+        ]);
     }
 
     

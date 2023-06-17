@@ -1,0 +1,90 @@
+{% extends './layout.html.twig' %}
+
+{% set title = 'User Management' %}
+
+{% block content %}
+    <div class="mt-2 mb-2">
+        <a href="/user/add" class="btn btn-primary">Register User</a>
+    </div>
+
+    <table class="table">
+        <thead>
+            <tr>
+                <th colspan="4">
+                   Users
+                </th>
+                <th>
+                    <div class="dropdown">
+                        <button class="btn btn-secondary dropdown-toggle btn-sm" type="button" id="items_per_page" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                          Items Per page
+                        </button>
+                        <div class="dropdown-menu" aria-labelledby="items_per_page">
+                          <a class="dropdown-item" href="/users?limit=10">10</a>
+                          <a class="dropdown-item" href="/users?limit=100">50</a>
+                          <a class="dropdown-item" href="/users?limit=100">100</a>
+                        </div>
+                    </div>
+                </th>
+            </tr>
+            <tr>
+                <th>Employee Name</th>
+                <th>Email</th>
+                <th>Active</th>
+                <th>Datime Last Loggedin</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for user in users %}
+                <tr>
+                    <td>{{user.fullname}}</td>
+                    <td>{{user.email}}</td>
+                    <td>
+                        {% if user.active==1 %}
+                            <span class="badge badge-success" >ACTIVE</span>
+                        {% else %}
+                            <span class="badge badge-danger">INACTIVE</span>
+                        {% endif %}
+                    </td>
+                    <td>
+                        {{ user.last_login | format_date(pattern="d/M/Y H:mm") }}
+                    </td>
+                    <td>
+                        Actions
+                    </td>
+                </tr>
+            {% endfor %}
+        </tbody>
+        <tfoot>
+            <tr><td colspan="5">
+                <ul class="pagination m-auto">
+                    <li class="page-item"><a class="page-link" href="/users?page=1&limit={{limit}}">First</a></li>
+
+                    {% if current_page == 1 %}
+                        <li class="page-item disabled"><a class="page-link" href="/users?page=1&limit={{limit}}">Previous</a></li>
+                    {% else %}
+                        <li class="page-item"><a class="page-link" href="/users?page={{current_page-1}}&limit={{limit}}">Previous</a></li>
+                    {% endif %}
+
+                    {% for page in 1..pages %}
+                        <li class="page-item {{ (page==current_page)?"active":"" }} "><a href="/users?page={{page}}&limit={{limit}}" class="page-link {{active}}" >{{page}}</a></li>
+                    {% endfor %}
+
+                    {% if current_page < pages %}
+                        <li class="page-item"><a class="page-link" href="/users?page={{current_page-1}}&limit={{limit}}">Next</a></li>
+                    {% else %}
+                        <li class="page-item disabled"><a class="page-link" href="/users?page={{pages}}&limit={{limit}}">Next</a></li>
+                    {% endif %}
+
+                    <li class="page-item"><a class="page-link" href="/users?page={{last_page}}&limit={{limit}}">Last</a></li>
+                </ul>
+            </td></tr>
+        </tfoot>
+    </table>
+      
+{% endblock %}
+
+
+{% block js %}
+    {{ parent() }}
+{% endblock %}

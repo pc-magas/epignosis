@@ -415,12 +415,10 @@ class UserService
      * @throws \InvalidArgumentException
      * @throws \PDOException
      */
-    public function listUsers(int $page, int $limit=10):array
+    public function listUsers(int $page, int $limit,?int &$pages):array
     {
         $limit = $limit<=0?10:$limit;
-
         $count = $this->dbConnection->query("SELECT count(*) from users",PDO::FETCH_COLUMN,0)->fetch();
-
         $pages = Generic::calculateNumberOfPages($limit,$count);
 
         if($page > $pages){
@@ -431,7 +429,7 @@ class UserService
 
         $sql = "
             SELECT 
-                user_id,email,fullname 
+                user_id,email,fullname,active,last_login
             from 
                 users
             order by fullname ASC
