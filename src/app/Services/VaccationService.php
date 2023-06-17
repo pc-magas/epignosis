@@ -148,7 +148,6 @@ class VaccationService
             LIMIT :offset , :limit
         ";
 
-
         $stmt = $this->dbConnection->prepare($sql);
         
         $stmt->bindParam('offset',$offset,\PDO::PARAM_INT);

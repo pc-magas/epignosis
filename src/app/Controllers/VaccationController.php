@@ -113,12 +113,12 @@ class VaccationController extends BaseController
          */
         $service = $di->get(VaccationService::class);
 
+        $session = $di->get('session');
+
         if($this->logedinAsManager()){
             $vaccations = $service->list($page,$limit);
         } else if($this->logedinAsEmployee()){
-            $session = $di->get('session');
-            $user_id = (int)$session->user['user_id'];
-
+            $user_id = (int)$session->user['user_id'];            
             $vaccations = $service->list($page,$limit,$user_id);
         } else {
             http_response_code(403);
@@ -127,10 +127,10 @@ class VaccationController extends BaseController
         }
 
         $twig = $di->get('twig');
-
         echo $twig->render('list_vaccations.html.twig',[
             'csrf'=>$this->getCsrfToken(),
             'vaccations'=>$vaccations,
+            'user_role'=>$session['role']
         ]);
     }
 

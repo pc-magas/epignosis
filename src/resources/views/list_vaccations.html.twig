@@ -21,10 +21,14 @@
                         <td>{{vaccation.aproval_status}}</td>
                         <td>
                             {% if vaccation.approval_status == 'PENDING' %}
-                              <div class="btn-group" role="group" aria-label="Basic example">
-                                <button type="button" class="btn btn-primary" data-vaccation_id="{{vaccation.vaccation_id}}" onclick="approve(this)">APPROVE</button>
-                                <button type="button" class="btn btn-danger" data-vaccation_id="{{vaccation.vaccation_id}}" onclick="reject(this)">REJECT</button>
-                              </div>
+                                {% if  user_role == 'MANAGER' %}
+                                    <div class="btn-group" role="group" aria-label="Basic example">
+                                        <button type="button" class="btn btn-primary" data-vaccation_id="{{vaccation.vaccation_id}}" onclick="approve(this)">APPROVE</button>
+                                        <button type="button" class="btn btn-danger" data-vaccation_id="{{vaccation.vaccation_id}}" onclick="reject(this)">REJECT</button>
+                                    </div>
+                                {% else %}
+                                    <button type="button" class="btn btn-danger" data-vaccation_id="{{vaccation.vaccation_id}}" onclick="delete(this)">REJECT</button>
+                                {% endif %}
                             {% endif %}
                         </td>
                 </tr>
