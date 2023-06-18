@@ -86,7 +86,7 @@ class UserController extends \App\Controllers\BaseController
         }
     }
 
-    public function logout($di){
+    public function logout(){
         $di = $this->getServiceContainer();
 
         $session = $di->get('session');
@@ -282,9 +282,26 @@ class UserController extends \App\Controllers\BaseController
         ]);
     }
 
-    public function resetPassword()
+    public function resetPasswordRequest()
     {
+        if(empty($_POST['csrf_token'])){
+            $this->jsonResponse(['msg'=>'User is Not Authorized To perform this Action'],403);
+        }
 
+        $csrfToken = $this->getCsrfToken();
+
+        if($csrfToken!=trim($_POST['csrf_token'])){
+            $this->jsonResponse(['msg'=>'User is Not Authorized To perform this Action'],403);
+        }
+
+        $service = $this->getServiceContainer()->get(UserService::class);
+
+        try{
+            $service->sendResetPasswordEmail($_POST['email']);
+            $this->jsonResponse(['msg'=>'Emailfor reset password is sent to '.strip_tags($_POST['email'])],200);
+        } catch(\InvalidArgumentException $e){ // Service Validates Email
+            $this->jsonResponse(['msg'=>'Email Is not valid'],400);
+        }
     }
     
 }

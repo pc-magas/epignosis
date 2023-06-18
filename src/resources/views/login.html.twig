@@ -43,19 +43,18 @@
                 submitBtn.removeAttribute("disabled");
             }
 
-            function gotoForm(event,link){
-                event.preventDefault();
-                const targetForm = link.getAttribute('href');
-                console.log(targetForm);
-
+            function gotoForm(targetForm){
+                
                 document.getElementById('login').style.display = 'none';
                 document.getElementById('resetPassword').style.display = 'none';
 
                 document.querySelector(targetForm).style.display='';
             }
 
-            function saveMessage(){
-                
+            function gotoFormHandler(event,link){
+                event.preventDefault();
+                const targetForm = link.getAttribute('href');
+                gotoForm(targetForm);
             }
 
             function formSubmit(event,form){
@@ -68,9 +67,19 @@
                     method: method,
                     redirect: 'follow',
                     body: new URLSearchParams(new FormData(form)),
-                }).then(function(response) {
-                    console.log(response);
-                }).err;
+                }).then(async (response) => {
+                    const classname = response.status!=200?'alert-danger':'alert-success';
+                    const jsonResponse = await response.json();
+                    
+                    const para = document.createElement("div");
+                    para.className="alert "+classname;
+                    para.innerText = jsonResponse.msg
+                    para.role='alert';
+
+                    const errors = document.getElementById("msg");
+                    errors.appendChild(para);
+                    gotoForm('#login');
+                });
 
             }
         </script>
@@ -89,12 +98,12 @@
             <label for="passInput">Password</label>
             <input id="passInput" type="password" name="pass" class="form-control" onchange="checkForm()" />
         </div>
-        <a href="#resetPassword" onclick="gotoForm(event,this)">Forgot Password</a>
+        <a href="#resetPassword" onclick="gotoFormHandler(event,this)">Forgot Password</a>
         <button id="submitBtn" type="submit" class="btn btn-primary btn-block" disabled>LOGIN</button>
     </form>
 
     <div id="resetPassword" style="display:none" >
-        <a href="#login" onclick="gotoForm(event,this)">Back to login</a>
+        <a href="#login" onclick="gotoFormHandler(event,this)">Back to login</a>
         <form  method="POST" action='/forgot_password' onsubmit="formSubmit(event,this)">
             <input type="hidden" name="csrf_token" value="{{csrf_token}}" />
             <div class="form-group">

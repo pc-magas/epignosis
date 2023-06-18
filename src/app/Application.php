@@ -102,7 +102,11 @@ class Application
         });
 
         $this->router->all('/logout',function() use ($di) {
-            $di->get(\App\Controllers\UserController::class)->logout($di);
+            $di->get(\App\Controllers\UserController::class)->logout();
+        });
+
+        $this->router->post('/forgot_password',function() use ($di){
+            $di->get(\App\Controllers\UserController::class)->resetPasswordRequest();
         });
 
         $this->router->get('/user/add',function() use ($di){
