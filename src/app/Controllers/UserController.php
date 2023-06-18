@@ -39,7 +39,6 @@ class UserController extends \App\Controllers\BaseController
         $twig = $di->get('twig');
 
         echo $twig->render('login.html.twig',[
-            'url'=>'/login',
             'csrf_token' => $this->getCsrfToken()
         ]);
     }
@@ -283,5 +282,9 @@ class UserController extends \App\Controllers\BaseController
         ]);
     }
 
+    public function resetPassword()
+    {
+
+    }
     
 }

@@ -286,7 +286,6 @@ class UserServiceTest extends DatabaseTestCase
 
     }
 
-
     public function testUpdatePassword()
     {
         $user = $this->createTestUser();

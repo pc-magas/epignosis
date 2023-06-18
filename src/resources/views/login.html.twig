@@ -31,20 +31,79 @@
 
                 submitBtn.removeAttribute("disabled");
             }
+
+            function checkResetFormEmail(mailInput){
+                const submitBtn = document.getElementById('resetSubmitBtn');
+
+                if(mailInput.value == '' || !validateEmail(mailInput.value)){
+                    submitBtn.setAttribute("disabled", "disabled");
+                    return;
+                }
+
+                submitBtn.removeAttribute("disabled");
+            }
+
+            function gotoForm(event,link){
+                event.preventDefault();
+                const targetForm = link.getAttribute('href');
+                console.log(targetForm);
+
+                document.getElementById('login').style.display = 'none';
+                document.getElementById('resetPassword').style.display = 'none';
+
+                document.querySelector(targetForm).style.display='';
+            }
+
+            function saveMessage(){
+                
+            }
+
+            function formSubmit(event,form){
+                event.preventDefault();
+
+                const action = form.getAttribute('action');
+                const method = form.getAttribute('method');
+
+                fetch(action, {
+                    method: method,
+                    redirect: 'follow',
+                    body: new URLSearchParams(new FormData(form)),
+                }).then(function(response) {
+                    console.log(response);
+                }).err;
+
+            }
         </script>
 {% endblock %}
 
 {% block main %}
-<form class="card-body" method="POST" action='{{url}}'>
-    <input type="hidden" name="csrf_token" value="{{csrf_token}}" />
-    <div class="form-group">
-        <label for="mailInput">Email address</label>
-        <input id="mailInput" type="email" name="email"  class="form-control" onchange="checkForm()"/>
+<div class="card-body">
+
+    <form id="login" method="POST" action='/login'>
+        <input type="hidden" name="csrf_token" value="{{csrf_token}}" />
+        <div class="form-group">
+            <label for="mailInput">Email address</label>
+            <input id="mailInput" type="email" name="email"  class="form-control" onchange="checkForm()"/>
+        </div>
+        <div class="form-group">
+            <label for="passInput">Password</label>
+            <input id="passInput" type="password" name="pass" class="form-control" onchange="checkForm()" />
+        </div>
+        <a href="#resetPassword" onclick="gotoForm(event,this)">Forgot Password</a>
+        <button id="submitBtn" type="submit" class="btn btn-primary btn-block" disabled>LOGIN</button>
+    </form>
+
+    <div id="resetPassword" style="display:none" >
+        <a href="#login" onclick="gotoForm(event,this)">Back to login</a>
+        <form  method="POST" action='/forgot_password' onsubmit="formSubmit(event,this)">
+            <input type="hidden" name="csrf_token" value="{{csrf_token}}" />
+            <div class="form-group">
+                <input id="mailInputReset" type="email" name="email" placeholder="Email to send an email reiminder" class="form-control" onchange="checkResetFormEmail(this)"/>
+            </div>
+            <button id="resetSubmitBtn" type="submit" class="btn btn-primary btn-block" disabled>Send me a reiminder link via email</button>
+        </form>
     </div>
-    <div class="form-group">
-        <label for="passInput">Password</label>
-        <input id="passInput" type="password" name="pass" class="form-control" onchange="checkForm()" />
-    </div>
-    <button id="submitBtn" type="submit" class="btn btn-primary btn-block" disabled>LOGIN</button>
-</form>
+  
+</div>
+
 {% endblock %}
