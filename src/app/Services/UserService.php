@@ -527,12 +527,12 @@ class UserService
         $this->dbConnection->beginTransaction();
         try{
 
-            $stmt = $this->dbConnection->prepare("UPDATE USER SET activation_token=NULL,token_expiration=NULL,password=:password where user_id=:user_id");
-            $stmt->prepare(['user_id'=>$user['user_id'],'password'=>$password]);
+            $stmt = $this->dbConnection->prepare("UPDATE users SET activation_token=NULL,token_expiration=NULL,password=:password where user_id=:user_id");
+            $stmt->execute(['user_id'=>$user['user_id'],'password'=>$password]);
             $stmt->execute();
-            $this->dBConnection->commit();
+            $this->dbConnection->commit();
         } catch(\PDOException $e){
-            $this->dBConnection->rollback();
+            $this->dbConnection->rollback();
             return false;
         }
 

@@ -312,7 +312,7 @@ class UserController extends \App\Controllers\BaseController
         }
 
         $service = $this->getServiceContainer();
-        
+
         $userService = $service->get(UserService::class);
         $user = $userService->getByToken($token,true);
 
@@ -326,8 +326,25 @@ class UserController extends \App\Controllers\BaseController
         $twig = $service->get('twig');        
         echo $twig->render('reset_password.html.twig',[
             'csrf_token'=>$this->getCsrfToken(),
+            'token' => $token,
             'user_id' => $user['user_id']
         ]);
     }
     
+    public function resetPassword()
+    {
+        $di = $this->getServiceContainer();
+
+        if(!$this->validateCSRF($_POST['csrf']) ){
+            $this->jsonResponse(['msg'=>'User is Not Authorized To perform this Action'],403);
+            return;
+        }
+
+        if(!$di->get(UserService::class)->resetUserPassword($_POST['token'],$_POST['password'])){
+            echo $this->jsonResponse(['msg'=>'Fail to reset password try again'],500);
+            return;
+        }
+
+        echo $this->jsonResponse(['msg'=>'Password Reset Success'],200); 
+    }
 }

@@ -113,6 +113,10 @@ class Application
             $di->get(\App\Controllers\UserController::class)->resetPasswordPage($token);
         });
 
+        $this->router->post('/reset_password',function() use ($di){
+            $di->get(\App\Controllers\UserController::class)->resetPassword();
+        });
+
         $this->router->get('/user/add',function() use ($di){
             $di->get(\App\Controllers\UserController::class)->registerUser();
         });
