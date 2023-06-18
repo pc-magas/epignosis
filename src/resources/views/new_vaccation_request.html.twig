@@ -11,11 +11,11 @@
     <div class="row mb-1">
             <div class="col">
                 <input type="text" class="form-control" name="fromDT" placeholder="From" required>
-                <input type="hidden" class="form-control" name="from" placeholder="From" required>
+                <input id="from" type="hidden" class="form-control" name="from" placeholder="From" required>
             </div>
             <div class="col">
                 <input type="text" class="form-control" name="untilDT" placeholder="Until" required>
-                <input type="hidden" class="form-control" name="until" placeholder="Until" required>
+                <input id="to" type="hidden" class="form-control" name="until" placeholder="Until" required>
 
             </div>
     </div>
@@ -48,33 +48,32 @@
     <script>
         
         $( function() {
-            const from = $( "input[name=fromDT]" ).datepicker({
+            var from = $( "input[name=fromDT]" ).datepicker({
+                defaultDate: "+1w",
                 dateFormat: 'dd/mm/yy',
-                onSelect: function() { 
-                    var dateObject = $(this).datepicker('getDate'); 
-                    console.log(dateObject);
-                    $("input[name=from]").val(reFormatDate(dateObject));
-                }
-            });
-            const until = $( "input[name=untilDT]" ).datepicker({
-                dateFormat: 'dd/mm/yy',
-                onSelect: function() { 
-                    var dateObject = $(this).datepicker('getDate'); 
-                    $("input[name=to]").val(reFormatDate(dateObject));
-                }
-            });
-
-            from.on('change',()=>{
+                altFormat: "yy-mm-dd",
+                altField: "#from",
+                changeMonth: true,
+                minDate: new Date()
+            }).on('change',function() {
+                // this belongs to input element
                 until.datepicker( "option", "minDate", getDate( this ) );
             });
 
-            until.on('change',()=>{
-                const date = getDate(this);
-                console.log(this);
+            var until = $( "input[name=untilDT]" ).datepicker({
+                defaultDate: "+1w",
+                dateFormat: 'dd/mm/yy',  
+                altFormat: "yy-mm-dd",
+                altField: "#to",
+                changeMonth: true,
+                minDate: new Date()
+            }).on('change',function (){
+                // this belongs to input element
                 from.datepicker( "option", "maxDate", getDate( this ) );
             });
 
             function getDate( element ) {
+                console.log(element.value);
                 try {
                     return $.datepicker.parseDate( "dd/mm/yy", element.value );
                 } catch( error ) {
