@@ -64,9 +64,12 @@
                 },
                 error: function(xhr, status) {
                     const statusCode = xhr.status;
+                    const responseText = JSON.parse(xhr.responseText);
                     if(statusCode == 403){
                         window.location='/';
                     }
+                    
+                    alert(responseText.msg);
                 }
             });
         }
