@@ -1,0 +1,118 @@
+{% extends './layout.html.twig' %}
+
+{% set title = 'Insert a vaccation' %}
+
+{% block content %}
+<div class="mb-1 mt-1">
+    <h1>Insert a Vaccation Request</h1>
+</div>
+
+<form method="post" action="/vaccation/add" onsubmit="handleSubmit(event,this)">
+    <div class="row mb-1">
+            <div class="col">
+                <input type="text" class="form-control" name="fromDT" placeholder="From" required>
+                <input type="hidden" class="form-control" name="from" placeholder="From" required>
+            </div>
+            <div class="col">
+                <input type="text" class="form-control" name="untilDT" placeholder="Until" required>
+                <input type="hidden" class="form-control" name="until" placeholder="Until" required>
+
+            </div>
+    </div>
+    <div class="form-group">
+        <textarea class="form-control" name="comment" rows="3"></textarea>
+    </div>
+    <div class="row mt-1">
+        <div class="col">
+            <a class="btn btn-secondary btn-block" href="/vaccations">Go to my requests</a>
+        </div>
+        <div class="col">
+            <button class="btn btn-success btn-block" type="submit">Save Vaccation Request</button>
+        </div>
+    </div>
+</form>
+{% endblock %}
+
+{% block css %}
+    {{ parent() }}
+    <link rel="stylesheet" href="https://code.jquery.com/ui/1.13.2/themes/base/jquery-ui.min.css">
+{% endblock %}
+
+{% block js %}
+
+   {{ parent() }}
+   <script
+			  src="https://code.jquery.com/ui/1.13.2/jquery-ui.min.js"
+			  integrity="sha256-lSjKY0/srUM9BE3dPm+c4fBo1dky2v27Gdjm2uoZaL0="
+			  crossorigin="anonymous"></script>
+    <script>
+        
+        $( function() {
+            const from = $( "input[name=fromDT]" ).datepicker({
+                dateFormat: 'dd/mm/yy',
+                onSelect: function() { 
+                    var dateObject = $(this).datepicker('getDate'); 
+                    console.log(dateObject);
+                    $("input[name=from]").val(reFormatDate(dateObject));
+                }
+            });
+            const until = $( "input[name=untilDT]" ).datepicker({
+                dateFormat: 'dd/mm/yy',
+                onSelect: function() { 
+                    var dateObject = $(this).datepicker('getDate'); 
+                    $("input[name=to]").val(reFormatDate(dateObject));
+                }
+            });
+
+            from.on('change',()=>{
+                until.datepicker( "option", "minDate", getDate( this ) );
+            });
+
+            until.on('change',()=>{
+                const date = getDate(this);
+                console.log(this);
+                from.datepicker( "option", "maxDate", getDate( this ) );
+            });
+
+            function getDate( element ) {
+                try {
+                    return $.datepicker.parseDate( "dd/mm/yy", element.value );
+                } catch( error ) {
+                    return null;
+                }
+            }
+
+        } );
+
+        function reFormatDate(date) {
+            var day = date.getDate();
+            var month = date.getMonth()+1;
+            var year = date.getFullYear();
+            return year + '-' + month + '-' + day;
+        }
+
+        function handleSubmit(event,form){
+            event.preventDefault();
+
+            const action = $(form).attr('action');
+            const method = $(form).attr('method');
+            console.log($(form).serialize()+"&csrf="+getCSRFToken());
+            $.ajax({
+                'action': action,
+                'method':method,
+                'data':$(form).serialize()+"&csrf="+getCSRFToken(),
+                success: function(){
+                    window.location='/vaccations'
+                },
+                error: function(xhr, status) {
+                    const statusCode = xhr.status;
+                    if(statusCode == 403){
+                        window.location='/';
+                    } 
+                }
+            });
+        }
+
+    </script>
+{% endblock %}
+

@@ -16,7 +16,7 @@ class VaccationController extends BaseController
         }
 
         $twig = $this->getServiceContainer()->get('twig');
-        echo $twig->render('save_vaccation.html.twig',[
+        echo $twig->render('new_vaccation_request.html.twig',[
             'csrf'=>$this->getCsrfToken()
         ]);
 
