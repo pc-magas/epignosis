@@ -131,12 +131,35 @@ class UserServiceTest extends DatabaseTestCase
     public function testUserActivate()
     {
         $user = $this->createTestUser(false);
-
         $conn = $this->dBConnection();
+
+        // createUser does not set expiration date intentionally so I can set it as my own
+        $sql = "UPDATE users set token_expiration='2023-06-12' where user_id=:user_id";
+        $stmt = $conn->prepare($sql);
+        $stmt->execute(['user_id'=>$user['user_id']]);
+
         $mailer = $this->dummyMail();
 
+        Carbon::setTestNow('2023-06-11');
         $service = new UserService($conn,$mailer);
         $this->assertTrue($service->activate($user['token']));
+    }
+
+    public function testUserActivateExpired()
+    {
+        $user = $this->createTestUser(false);
+        $conn = $this->dBConnection();
+
+        // createUser does not set expiration date intentionally so I can set it as my own
+        $sql = "UPDATE users set token_expiration='2023-06-12' where user_id=:user_id";
+        $stmt = $conn->prepare($sql);
+        $stmt->execute(['user_id'=>$user['user_id']]);
+
+        $mailer = $this->dummyMail();
+
+        Carbon::setTestNow('2023-06-19');
+        $service = new UserService($conn,$mailer);
+        $this->assertFalse($service->activate($user['token']));
     }
 
     public function testUserDeleteExists()
@@ -325,4 +348,31 @@ class UserServiceTest extends DatabaseTestCase
 
         $this->assertTrue(password_verify('3456',$dataToCheck['password']));
     }
+
+    public function testCreateNewForgotPasswordRequest()
+    {
+        $user = $this->createTestUser();
+        $conn = $this->dBConnection();
+
+        $stmt = $conn->prepare("UPDATE users SET activation_token=NULL,token_expiration=NULL");
+        $stmt->execute();
+
+        $mailer = $this->dummyMail();
+        $mailer->expects($this->once())->method('send');
+
+        $service = new UserService($conn,$mailer);
+
+        $this->assertTrue($service->sendResetPasswordEmail($user['email']));
+
+        $stmt = $conn->prepare("SELECT * from users where user_id=:user_id");
+        $stmt->execute(['user_id'=>$user['user_id']]);
+
+        $result = $stmt->fetch(\PDO::FETCH_ASSOC);
+
+        $this->assertNotNull($result['token_expiration']);
+        $this->assertNotNull($result['activation_token']);
+
+    }
+ 
+    
 }

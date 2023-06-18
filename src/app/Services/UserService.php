@@ -8,6 +8,7 @@ use App\Exceptions\UserNotFoundException;
 use App\Utils\Generic;
 
 use Carbon\Carbon;
+use Symfony\Component\Console\Helper\Helper;
 use Symfony\Component\Mailer\MailerInterface;
 
 use Symfony\Component\Mime\Email;
@@ -180,7 +181,7 @@ class UserService
                     :token,
                     :expiration_dt,
                     :role,
-                    false
+                    true
                 );";
 
             $stmt = $this->dbConnection->prepare($sql);
@@ -190,7 +191,7 @@ class UserService
                 'email' => strip_tags($email),
                 'fullname' => strip_tags($fullname),
                 'pass' => $password,
-                'token' => substr(base64_encode(random_bytes(100)),0,60),
+                'token' => Generic::createUrlSafeToken(60),
                 'expiration_dt' => Carbon::now()->modify('+24 hours')->format('Y-m-d H:i:s'),
                 'role'=>$userRole
             ]);
@@ -207,50 +208,16 @@ class UserService
             return false;
         }
 
-
-        $email = (new Email())
-            ->from('hello@example.com')
-            ->to($email)
-            ->subject('Account Activation')
-            ->text("An account has been activated please visit at ".Generic::getAppUrl("/activate")." in order for your account to be activated");
-
-        $this->mailer->send($email);
-
         return true;
     }
 
-    /**
-     * Activate User
-     *
-     * @param string $token
-     * @return bool
-     */
-    public function activate(string $token):bool
+    private function getByToken(string $token, bool $active=false)
     {
-        $sql = "SELECT user_id from users where activation_token=:token and active=false";
+        $sql = "SELECT user_id,token_expiration from users where activation_token=:token and active=:active";
 
         $stmt = $this->dbConnection->prepare($sql);
-        $stmt->execute(['token'=>$token]);
-        $result = $stmt->fetch(PDO::FETCH_ASSOC);
-
-        if(empty($result)){
-            return false;
-        }
-
-
-        $this->dbConnection->beginTransaction();
-
-        try{
-            $sql = "UPDATE users SET activation_token=NULL,active=true,token_expiration=NULL where user_id=:user_id";
-            $stmt = $this->dbConnection->prepare($sql);
-            $stmt->execute(['user_id'=>$result['user_id']]);
-            $this->dbConnection->commit();
-        }catch(\PDOException $e){
-            $this->dbConnection->rollBack();
-            return false;
-        }
-        
-        return true;
+        $stmt->execute(['token'=>$token,'active'=>$active]);
+        return $stmt->fetch(PDO::FETCH_ASSOC);
     }
 
     /**
@@ -473,5 +440,72 @@ class UserService
         $stmt = $this->dbConnection->prepare($sql);
         $stmt->execute(['user_id' => $user_id]);
         return $stmt->fetch(PDO::FETCH_ASSOC);
+    }
+
+   /**
+    * Send Activation Email 
+    * and create activation token
+    *
+    * @param string $email
+    * @return boolean
+    */
+    public function sendResetPasswordEmail(string $email):bool
+    {
+        if(empty($email) || !Generic::validateEmail($email)){
+            throw new \InvalidArgumentException('Email is not a valid one',self::INVALID_EMAIL_ERROR);
+        }
+
+        $sql = "SELECT * from users where email=:email and active=true";
+
+        $stmt = $this->dbConnection->prepare($sql);
+        $stmt->execute(['email'=>$email]);
+
+        $user = $stmt->fetch(PDO::FETCH_ASSOC);
+
+        if(empty($user)){
+            return false;
+        }
+
+        $sql = "UPDATE users SET  activation_token=:token, token_expiration=:expiration_date where user_id = :user_id";
+     
+        $this->dbConnection->beginTransaction();
+
+        $token = Generic::createUrlSafeToken(60);
+        try {
+            
+            $stmt = $this->dbConnection->prepare($sql);
+            $stmt->execute([
+                'user_id' => $user['user_id'],
+                'token'   => $token,
+                'expiration_date' => Carbon::now()->modify('+1 hour') // we need no more than this.
+            ]);
+
+            $this->dbConnection->commit();
+        }catch(\PDOException $e) {
+            $this->dbConnection->rollBack();
+            return false;
+        }
+
+
+        $email = (new Email())
+            ->from('hello@example.com')
+            ->to($email)
+            ->subject('Account Activation')
+            ->text("An account has been activated please visit at ".Generic::getAppUrl("/pr/${token}")." in order for your account to be activated");
+
+        $this->mailer->send($email);
+
+        return true;
+    }
+
+
+    /**
+     * Undocumented function
+     *
+     * @return void
+     */
+    public function resetUserPassword($token,$password)
+    {
+
     }
 }

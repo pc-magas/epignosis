@@ -94,26 +94,7 @@ class UserController extends \App\Controllers\BaseController
         $session->user = null;
         header('Location: '.Generic::getAppUrl(''));
     }
-
-    public function activate($token)
-    {
-        $di = $this->getServiceContainer();
-        
-        /**
-         * @var UserService
-         */
-        $userService = $di->get(UserService::class);
-
-        if(!$userService->activate($token)){
-            http_response_code(404);
-            $twig = $di->get('twig');
-            echo $twig->render('404.html.twig');
-            return;
-        }
-
-        header('Location: '.Generic::getAppUrl('/login'));
-    }
-
+    
     public function registerUser()
     {
         $di = $this->getServiceContainer();

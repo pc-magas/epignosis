@@ -55,4 +55,22 @@ class Generic
         $page = ($page<=0)?1:$page;
         return ($page - 1)*$records_per_page;
     }
+
+    /**
+     * Create a Url-Safe 
+     * Cryptographically secure random token
+     *
+     * @param integer|null $length
+     * @return string
+     */
+    public static function createUrlSafeToken(?int $length=50):string
+    {
+        // Random bytes use a cryptographically secure random bytes
+        // For urls that there's the change to be brute-forced we need a good randomness
+        $token = base64_encode(random_bytes(100));
+        $token = preg_replace('/[^a-zA-Z0-9]/i','',$token);
+        $token = substr($token,0,$length);
+
+        return $token;
+    }
 }

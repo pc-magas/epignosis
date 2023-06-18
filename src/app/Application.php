@@ -93,10 +93,6 @@ class Application
             $di->get(\App\Controllers\HomepageController::class)->homepage();
         });
 
-        $this->router->get('/user/a/{token}',function($token) use ($di) {
-            $di->get(\App\Controllers\UserController::class)->activate($token);
-        });
-
         $this->router->get('/login',function() use ($di) {
             $di->get(\App\Controllers\UserController::class)->login();
         });
