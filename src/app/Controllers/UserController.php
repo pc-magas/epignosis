@@ -272,6 +272,7 @@ class UserController extends \App\Controllers\BaseController
         }
     }
 
+    
     public function listUsers()
     {
         $di = $this->getServiceContainer();

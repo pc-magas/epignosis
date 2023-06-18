@@ -2,24 +2,24 @@
 
 {% block content %}
 
-{% if user.role == 'MANAGER' %}
+{% if role == 'MANAGER' %}
 <h1>Basic User Info</h1>
 
 <form id="usr_action" class="m-2" method="post" action="/user/update/{{user.user_id}}" onsubmit="handleUserSubmit(event,this)">
     <div class="form-group">
         <label> Full name </label>
-        <input type="text" name="fullname" class="form-control" required />
+        <input type="text" name="name" class="form-control" value="{{user.fullname}}" required />
     </div>
     <div class="form-group">
         <label> Email </label>
-        <input type="email" name="email" class="form-control" required />
+        <input type="email" name="email" class="form-control" value="{{user.email}}" required />
     </div>
 
     <div class="form-group">
         <label> Role </label>
         <select  class="form-control" name="role">
-            <option value="MANAGER">MANAGER</option>
-            <option value="EMPLOYEE" selected>EMPLOYEE</option>
+            <option value="MANAGER" {% if user.role == 'MANAGER' %} selected {% endif %}>MANAGER</option>
+            <option value="EMPLOYEE" {% if user.role == 'EMPLOYEE' %} selected {% endif %}>EMPLOYEE</option>
         </select>
     </div>
 
@@ -60,13 +60,13 @@
                 'method': method,
                 'data':$(form).serialize()+"&csrf="+getCSRFToken(),
                 success: function(){
-                    form.reset();
+                    window.location='/users';
                 },
                 error: function(xhr, status) {
                     const statusCode = xhr.status;
                     if(statusCode == 403){
                         window.location='/';
-                    } 
+                    }
                 }
             });
         }
