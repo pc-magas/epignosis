@@ -24,15 +24,6 @@ class EmployeeRole extends AbstractSeed
                 'fullname'=> 'EMPLOYEE Active'.$prefix,
                 'role'=>'EMPLOYEE'
             ],
-            [
-                'email'=>$prefix."_employee_inactive@example.com",
-                'password'=>password_hash('1234',PASSWORD_DEFAULT),
-                'active'=>false,
-                'fullname'=> 'EMPLOYEE Inactive'.$prefix,
-                'role'=>'EMPLOYEE',
-                'activation_token'=>substr(base64_encode(random_bytes(12)),0,60),
-                'token_expiration'=>\Carbon\Carbon::now()->modify("+24 hours")->format('Y-m-d H:i:s')
-            ]
         ];
 
         $this->insert('users', $data);

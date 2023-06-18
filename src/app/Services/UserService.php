@@ -466,7 +466,7 @@ class UserService
             return false;
         }
 
-        $sql = "UPDATE users SET  activation_token=:token, token_expiration=:expiration_date where user_id = :user_id";
+        $sql = "UPDATE users SET activation_token=:token, token_expiration=:expiration_date where user_id = :user_id";
      
         $this->dbConnection->beginTransaction();
 
@@ -500,12 +500,42 @@ class UserService
 
 
     /**
-     * Undocumented function
+     * Reset User Password
      *
-     * @return void
+     * @param string $token Activation token
+     * @param string $password New Password
+     * @return bool
      */
-    public function resetUserPassword($token,$password)
+    public function resetUserPassword(string $token, string $password):bool
     {
+        if(empty($token)){
+            return false;
+        }
 
+        if(empty($password)){
+            return false;
+        }
+
+        $user = $this->getByToken($token);
+
+        if(empty($user)){
+            return false;
+        }
+
+        $password= password_hash($password,PASSWORD_DEFAULT);
+
+        $this->dbConnection->beginTransaction();
+        try{
+
+            $stmt = $this->dbConnection->prepare("UPDATE USER SET activation_token=NULL,token_expiration=NULL,password=:password where user_id=:user_id");
+            $stmt->prepare(['user_id'=>$user['user_id'],'password'=>$password]);
+            $stmt->execute();
+            $this->dBConnection->commit();
+        } catch(\PDOException $e){
+            $this->dBConnection->rollback();
+            return false;
+        }
+
+        return true;
     }
 }

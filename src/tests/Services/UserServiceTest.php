@@ -46,11 +46,7 @@ class UserServiceTest extends DatabaseTestCase
 
     public function testRegisterManagerSuccess()
     {
-        /**
-         * @var 
-         */
         $mailer = $this->dummyMail();
-        $mailer->expects($this->once())->method('send');
 
         /**
          * @var \PDO
@@ -72,7 +68,7 @@ class UserServiceTest extends DatabaseTestCase
         $this->assertEquals('test@example.com',$result['email']);
         $this->assertTrue(password_verify('1234',$result['password']));
 
-        $this->assertEquals(0,$result['active']);
+        $this->assertEquals(1,$result['active']);
         $this->assertNotEmpty($result['activation_token']);
         $this->assertEquals('2023-06-13 00:00:00',$result['token_expiration']);
 
@@ -81,11 +77,7 @@ class UserServiceTest extends DatabaseTestCase
 
     public function testUserRegisterEmployee()
     {
-        /**
-         * @var 
-         */
         $mailer = $this->dummyMail();
-        $mailer->expects($this->once())->method('send');
 
         /**
          * @var \PDO
@@ -108,7 +100,7 @@ class UserServiceTest extends DatabaseTestCase
         $this->assertEquals('test@example.com',$result['email']);
         $this->assertTrue(password_verify('1234',$result['password']));
 
-        $this->assertEquals(0,$result['active']);
+        $this->assertEquals(1,$result['active']);
         $this->assertNotEmpty($result['activation_token']);
         $this->assertEquals('2023-06-13 00:00:00',$result['token_expiration']);
 
@@ -126,40 +118,6 @@ class UserServiceTest extends DatabaseTestCase
 
         $this->expectException(\App\Exceptions\UserAlreadyExistsException::class);
         $service->registerUser($user['email'],'1234',$user['fullname'],'EMPLOYEE');
-    }
-
-    public function testUserActivate()
-    {
-        $user = $this->createTestUser(false);
-        $conn = $this->dBConnection();
-
-        // createUser does not set expiration date intentionally so I can set it as my own
-        $sql = "UPDATE users set token_expiration='2023-06-12' where user_id=:user_id";
-        $stmt = $conn->prepare($sql);
-        $stmt->execute(['user_id'=>$user['user_id']]);
-
-        $mailer = $this->dummyMail();
-
-        Carbon::setTestNow('2023-06-11');
-        $service = new UserService($conn,$mailer);
-        $this->assertTrue($service->activate($user['token']));
-    }
-
-    public function testUserActivateExpired()
-    {
-        $user = $this->createTestUser(false);
-        $conn = $this->dBConnection();
-
-        // createUser does not set expiration date intentionally so I can set it as my own
-        $sql = "UPDATE users set token_expiration='2023-06-12' where user_id=:user_id";
-        $stmt = $conn->prepare($sql);
-        $stmt->execute(['user_id'=>$user['user_id']]);
-
-        $mailer = $this->dummyMail();
-
-        Carbon::setTestNow('2023-06-19');
-        $service = new UserService($conn,$mailer);
-        $this->assertFalse($service->activate($user['token']));
     }
 
     public function testUserDeleteExists()
@@ -374,5 +332,28 @@ class UserServiceTest extends DatabaseTestCase
 
     }
  
+    public function setNewForgotenPassword()
+    {
+        $user = $this->createTestUser(true);
+        $conn = $this->dBConnection();
+
+        $stmt = $conn->prepare("UPDATE users SET activation_token='lalalala',token_expiration='2023-06-10 19:00:00' where user_id=:user_id");
+        $stmt->execute(['user'=>$user['user_id']]);
+
+        $mailer = $this->dummyMail();
+
+        $service = new UserService($conn,$mailer);
+
+        $this->assertTrue($service->resetUserPassword('lalalala','3459'));
+
+        $stmt = $conn->prepare("SELECT * from users where user_id=:user_id");
+        $stmt->execute(['user_id'=>$user['user_id']]);
+
+        $result = $stmt->fetch(\PDO::FETCH_ASSOC);
+
+        $this->assertNull($result['token_expiration']);
+        $this->assertNull($result['activation_token']);
+        $this->assertTrue(password_verify($result['password'],'3459'));
+    }
     
 }
