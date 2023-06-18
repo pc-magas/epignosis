@@ -454,10 +454,18 @@ class UserService
     }
     
 
-    public function getUserInfo(int $user_id)
+    /**
+     * Retrieve a single user Information
+     *
+     * @param integer $user_id The user's Id
+     * @return array With user Info
+     * 
+     * @throws \InvalidArgumentException In case that user_id <=0
+     */
+    public function getUserInfo(int $user_id):array
     {
-        if($user_id < 0 ){
-            return new InvalidArgumentException("User Id is invalid ${user_id}");
+        if($user_id <= 0 ){
+            return new \InvalidArgumentException("User Id is invalid ${user_id}");
         }
 
         $sql = "SELECT * from users where user_id = :user_id LIMIT 1";
