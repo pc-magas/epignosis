@@ -14,7 +14,11 @@ class HomepageController extends \App\Controllers\BaseController
             header('Location: '.Generic::getAppUrl('login'));
         }
 
-        echo("Homepage");
+        $twig = $di->get('twig');
+
+        echo $twig->render('home.html.twig',[
+            'user_role'=>$session->user['role']
+        ]);
     }
     
 

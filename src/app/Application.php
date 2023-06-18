@@ -133,6 +133,11 @@ class Application
             $di->get(\App\Controllers\UserController::class)->updatePassword($user_id);
         });
 
+        $this->router->get('/profile',function() use ($di){
+            $user_id = $di->get('session')->user['user_id']??-1;
+            $di->get(\App\Controllers\UserController::class)->updateUserPage($user_id);
+        });
+
         $this->router->get('/users',function() use ($di){
             $di->get(\App\Controllers\UserController::class)->listUsers();
         });
