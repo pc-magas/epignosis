@@ -49,11 +49,11 @@
         
         $( function() {
             var from = $( "input[name=fromDT]" ).datepicker({
-                defaultDate: "+1w",
                 dateFormat: 'dd/mm/yy',
                 altFormat: "yy-mm-dd",
                 altField: "#from",
                 changeMonth: true,
+                numberOfMonths: 2,
                 minDate: new Date()
             }).on('change',function() {
                 // this belongs to input element
@@ -61,11 +61,11 @@
             });
 
             var until = $( "input[name=untilDT]" ).datepicker({
-                defaultDate: "+1w",
                 dateFormat: 'dd/mm/yy',  
                 altFormat: "yy-mm-dd",
                 altField: "#to",
                 changeMonth: true,
+                numberOfMonths: 2,
                 minDate: new Date()
             }).on('change',function (){
                 // this belongs to input element
