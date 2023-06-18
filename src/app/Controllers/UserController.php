@@ -126,7 +126,7 @@ class UserController extends \App\Controllers\BaseController
         $csrfToken = $this->getCsrfToken();
 
         $twig = $di->get('twig');
-        echo $twig->render('modify_user.html.twig',[
+        echo $twig->render('new_user.html.twig',[
             'csrf'=>$csrfToken,
             'title'=>'User Registration',
             'action'=>Generic::getAppUrl('/user/add')
@@ -181,6 +181,38 @@ class UserController extends \App\Controllers\BaseController
         }
 
         $this->jsonResponse(['msg'=>'Delete Success'],200);
+    }
+
+    public function updateUserPage($user_id)
+    {
+        $di = $this->getServiceContainer();
+
+        if(!$this->logedinAsManager() && !$this->logedinAsUser($user_id)){
+            http_response_code(403);
+            header('Location: '.Generic::getAppUrl(''));
+            return;
+        }
+
+        /**
+         * @var UserService
+         */
+        $userService = $di->get(UserService::class);
+
+        $user = $userService->getUserInfo($user_id);
+
+        if(empty($user_id)){
+            http_response_code(404);
+            echo "USER NOT FOUND";
+            return;
+        }
+
+        $twig = $di->get('twig');
+        $session = $di->get('session');
+        echo $twig->render('edit_user.html.twig',[
+            'csrf'=>$this->getCsrfToken(),
+            'user'=>$user,
+            'role'=>$session->user['role']
+        ]);
     }
 
     public function updateUser($user_id)

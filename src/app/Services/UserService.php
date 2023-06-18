@@ -444,7 +444,18 @@ class UserService
 
         return $stmt->fetchAll(PDO::FETCH_ASSOC);
     }
-
-
     
+
+    public function getUserInfo(int $user_id)
+    {
+        if($user_id < 0 ){
+            return new InvalidArgumentException("User Id is invalid ${user_id}");
+        }
+
+        $sql = "SELECT * from users where user_id = :user_id LIMIT 1";
+        
+        $stmt = $this->dbConnection->prepare($sql);
+        $stmt->execute(['user_id' => $user_id]);
+        return $stmt->fetch(PDO::FETCH_ASSOC);
+    }
 }

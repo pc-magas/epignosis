@@ -2,7 +2,10 @@
 
 {% block content %}
 
-<form id="usr_action" class="m-2" method="post" action="{{action}}" onsubmit="handleUserSubmit(event,this)">
+{% if user.role == 'MANAGER' %}
+<h1>Basic User Info</h1>
+
+<form id="usr_action" class="m-2" method="post" action="/user/update/{{user.user_id}}" onsubmit="handleUserSubmit(event,this)">
     <div class="form-group">
         <label> Full name </label>
         <input type="text" name="fullname" class="form-control" required />
@@ -20,16 +23,22 @@
         </select>
     </div>
 
-    {# Used for edit #}
-    {% block formextras %}
-    {% endblock %}
+    <button type="submit" class="btn btn-primary">Save User</button>
+</form>
+{% endif %}
 
+<h1>Security Management</h1>
+
+<form method="post" action="/user/password/{{user.user_id}}" onsubmit="handleUserSubmit(event,this)">
     <div class="form-group">
         <label> Password </label>
-        <input type="password" class="form-control" name="password" requires />
+        <input type="password" class="form-control" name="password" required />
     </div>
-
-    <button type="submit" class="btn btn-primary">Save User</button>
+    <div class="form-group">
+        <label> Password </label>
+        <input type="password" class="form-control" name="password2" required />
+    </div>
+    <button type="submit" class="btn btn-primary" id="passchangeBtn" disabled>Save Password</button>
 </form>
 
 {% endblock %}
@@ -38,19 +47,17 @@
     {{ parent() }}
     <script>
 
-        function getCSRFToken(){
-            return document.head.querySelector("[name=csrf][content]").content;
-        }
-
         function handleUserSubmit(event,form){
             event.preventDefault();
 
             const action = $(form).attr('action');
             const method = $(form).attr('method');
+
+            console.log(action);
             console.log($(form).serialize()+"&csrf="+getCSRFToken());
             $.ajax({
-                'action': action,
-                'method':method,
+                'url': action,
+                'method': method,
                 'data':$(form).serialize()+"&csrf="+getCSRFToken(),
                 success: function(){
                     form.reset();
@@ -63,6 +70,22 @@
                 }
             });
         }
+
+        $(document).ready(function(){
+
+            $('input[type=password]').on('change',function(e){
+                const pass1 = $('input[type=password][name=password]').val();
+                const pass2 = $('input[type=password][name=password2]').val();
+
+
+                if(pass1!=pass2 && pass1 !== ''){
+                    $("#passchangeBtn").attr('disabled',true);
+                } else {
+                    $("#passchangeBtn").attr('disabled',false);
+                }
+            });
+        })
+
 
     </script>
 {% endblock %}

@@ -51,7 +51,7 @@
                     </td>
                     <td>
                         <div class="btn-group" role="group" aria-label="Basic example">
-                            <button class="btn btn-success btn-sm">EDIT</button>
+                            <a class="btn btn-success btn-sm" href="/user/update/{{user.user_id}}">EDIT</a>
                             <button class="btn btn-danger btn-sm" onclick="deleteUser({{user.user_id}})">DELETE</button>
                         </div>
                     </td>
@@ -84,6 +84,32 @@
             </td></tr>
         </tfoot>
     </table>
+
+
+    <div class="modal" tabindex="-1">
+        <div class="modal-dialog">
+          <div class="modal-content">
+            <div class="modal-header">
+              <h5 class="modal-title">Edit User</h5>
+              <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                <span aria-hidden="true">&times;</span>
+              </button>
+            </div>
+            <div class="modal-body">
+                    <form method="post" action="/user/update">
+                        <input type="hidden" name="user_id" />
+                        <div class="form-group">
+                            <input name="name" type="text" />
+                        </div>
+                        <div class="form-group">
+                            <input name="email" type="email" />
+                        </div>
+                        <button type="">Save Basic User Info</button>
+                    </form>
+            </div>
+          </div>
+        </div>
+    </div>
       
 {% endblock %}
 
@@ -99,11 +125,15 @@
                     window.location.reload();
                 }).fail(function(xhr){
                     if(xhr.status = 403){
-                        // window.location='/';
+                        window.location='/';
                     }
                     alert("Internal Error");
                 });
             }
+        }
+
+        function editUser(user_id,existing_name,existing_email){
+
         }
     </script>
 
