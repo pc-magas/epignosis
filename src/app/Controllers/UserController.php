@@ -303,5 +303,31 @@ class UserController extends \App\Controllers\BaseController
             $this->jsonResponse(['msg'=>'Email Is not valid'],400);
         }
     }
+
+    public function resetPasswordPage($token)
+    {
+        if(empty($token)){
+            http_response_code(404);
+            header('Location: '.Generic::getAppUrl(''));
+        }
+
+        $service = $this->getServiceContainer();
+        
+        $userService = $service->get(UserService::class);
+        $user = $userService->getByToken($token,true);
+
+        if(empty($user)){
+            http_response_code(404);
+            header('Location: '.Generic::getAppUrl(''));
+        }
+
+        // $now = Carbon::now();
+
+        $twig = $service->get('twig');        
+        echo $twig->render('reset_password.html.twig',[
+            'csrf_token'=>$this->getCsrfToken(),
+            'user_id' => $user['user_id']
+        ]);
+    }
     
 }

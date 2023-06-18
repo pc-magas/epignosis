@@ -211,12 +211,12 @@ class UserService
         return true;
     }
 
-    private function getByToken(string $token, bool $active=false)
+    public function getByToken(string $token)
     {
-        $sql = "SELECT user_id,token_expiration from users where activation_token=:token and active=:active";
+        $sql = "SELECT user_id,token_expiration from users where activation_token=:token";
 
         $stmt = $this->dbConnection->prepare($sql);
-        $stmt->execute(['token'=>$token,'active'=>$active]);
+        $stmt->execute(['token'=>$token]);
         return $stmt->fetch(PDO::FETCH_ASSOC);
     }
 

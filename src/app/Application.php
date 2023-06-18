@@ -109,6 +109,10 @@ class Application
             $di->get(\App\Controllers\UserController::class)->resetPasswordRequest();
         });
 
+        $this->router->get('/pr/{token}',function($token) use ($di){
+            $di->get(\App\Controllers\UserController::class)->resetPasswordPage($token);
+        });
+
         $this->router->get('/user/add',function() use ($di){
             $di->get(\App\Controllers\UserController::class)->registerUser();
         });
