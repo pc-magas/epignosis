@@ -22,9 +22,14 @@
 
     </head>
     <body >
-        <header class="d-flex flex-row flex-row-reverse p-1 bg-dark">
-            <a class="btn btn-danger ml-1" href="/logout">logout</a>
-            <a class="btn btn-secondary ml-1" href="/profile">profile</a>
+        <header class="row bg-dark p-1">
+            <div class="col">
+                <a class="btn btn-light" href="/">Home</a>
+            </div>
+            <div class="col d-flex flex-row flex-row-reverse">
+                <a class="btn btn-danger ml-1" href="/logout">logout</a>
+                <a class="btn btn-secondary ml-1" href="/profile">profile</a>
+            </div>
         </header>
 
         {% block main %}

@@ -138,7 +138,8 @@ class VaccationService
 
         $sql = "
             SELECT 
-                vaccation_id,`from`,until,aproval_status,vaccations.request_timestamp,users.fullname as user_name
+                vaccation_id,`from`,until,aproval_status,vaccations.request_timestamp,users.fullname as user_name,
+                comments
             from 
                 vaccations
                 join users on vaccations.user_id = users.user_id

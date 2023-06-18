@@ -115,8 +115,16 @@ class UserService
 
         $sql = "UPDATE users SET last_login = :timestamp where email = :email";
 
-        $stmt= $this->dbConnection->prepare($sql);
-        $stmt->execute(['timestamp'=>\Carbon\Carbon::now()->format('Y-m-d H:i:s'),'email'=>$email]);
+        $this->dbConnection->beginTransaction();
+        try{
+            $stmt= $this->dbConnection->prepare($sql);
+            $stmt->execute(['timestamp'=>\Carbon\Carbon::now()->format('Y-m-d H:i:s'),'email'=>$email]);
+            $this->dbConnection->commit();
+        } catch(\Exception $e){
+            $this->dbConnection->rollback();
+            // User is logged in there's no point to avoid user login because
+            // last login date could not be updated
+        }
 
         return $result;
     }

@@ -12,7 +12,7 @@
     <table class="table">
         <thead>
             <tr>
-                <th colspan="5">
+                <th colspan="6">
                     {% if  user_role == 'EMPLOYEE' %}
                         My Vaccation Requests
                     {% else %}
@@ -37,6 +37,7 @@
                 <th>Employee Name</th>
                 <th>From</th>
                 <th>Until</th>
+                <th>Comments</th>
                 <th>Requested At</th>
                 <th>Status</th>
                 <th>Actions</th>
@@ -48,6 +49,7 @@
                         <td>{{vaccation.user_name}}</td>
                         <td>{{vaccation.from | format_date(pattern="d/M/Y")}}</td>
                         <td>{{vaccation.until | format_date(pattern="d/M/Y")}}</td>
+                        <td>{{vaccation.comments}}</td>
                         <td>{{vaccation.request_timestamp | format_date(pattern="d/M/Y H:mm")}}</td>
                         <td>{{vaccation.aproval_status}}</td>
                         <td>
@@ -66,7 +68,7 @@
             {% endfor %}
         </tbody>
         <tfoot>
-            <tr><td colspan="6">
+            <tr><td colspan="7">
                 <ul class="pagination m-auto">
                     <li class="page-item"><a class="page-link" href="/vaccations?page=1&limit={{limit}}">First</a></li>
 
