@@ -31,4 +31,4 @@ docker exec -ti -u www-data epignosis_recruitment_php81 ./vendor/bin/phinx migra
 # APP URLs
 
 The app is served via http://127.0.0.1:8080
-Mailhog (test SMTP server) and all emails are listed upon http://127.0.0.1:8025
+Mailhog and all emails are listed upon http://127.0.0.1:8025 (test SMTP server web panel)
